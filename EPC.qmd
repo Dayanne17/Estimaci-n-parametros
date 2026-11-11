@@ -11,6 +11,7 @@ title-block-banner: "#AE45FF"
 
 format:
   html:
+    embed-resources: true
     page-layout: full
     fontsize: 14pt
     toc: true
@@ -39,11 +40,11 @@ knitr:
 ---
 
 ::: {style="position:absolute; top:20px; right:10px;"}
-<img src="LOGO/logo_ut.png" width="150"/>
+<img src="logo_ut.png" width="150"/>
 :::
 
 ::: {style="position:absolute; top:0px; left:10px;"}
-<img src="LOGO/logo_lm.png" width="150"/>
+<img src="logo_lm.png" width="150"/>
 :::
 
 
