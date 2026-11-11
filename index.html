@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dayanne Tique Bustamante Paula Andrea Saldaña Cuellar Jorge Eliecer Riaño Duarte">
+
+<title>ESTIMACIÓN DE PARAMETROS E INTERVALOS DE CONFIANZA</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="EPC_files/libs/clipboard/clipboard.min.js"></script>
+<script src="EPC_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="EPC_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="EPC_files/libs/quarto-html/popper.min.js"></script>
+<script src="EPC_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="EPC_files/libs/quarto-html/anchor.min.js"></script>
+<link href="EPC_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="EPC_files/libs/quarto-html/quarto-syntax-highlighting-c4e1171eb4281116019c604a711c5128.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="EPC_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="EPC_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="EPC_files/libs/bootstrap/bootstrap-4b064ad5cf698f245b930d8c9ed74028.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<style>html{ scroll-behavior: smooth; }</style>
+<style>
+
+      .quarto-title-block .quarto-title-banner {
+        background: #AE45FF;
+      }
+</style>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">ESTIMACIÓN DE PARAMETROS E<br>INTERVALOS DE CONFIANZA</h1>
+            <p class="subtitle lead">FUNDAMENTOS, PROCEDIMIENTOS Y APLICACIONES EN EDUCACIÓN</p>
+                      </div>
+  </div>
+    
+  <div class="quarto-title-meta-author column-page-right">
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-heading">Afiliación</div>
+    
+      <div class="quarto-title-meta-contents">
+      <p class="author">Dayanne Tique Bustamante<br>Paula Andrea Saldaña Cuellar<br>Jorge Eliecer Riaño Duarte </p>
+    </div>
+    <div class="quarto-title-meta-contents">
+          <p class="affiliation">
+              <a href="https://www.ut.edu.co/">
+              Universidad del Tolima
+              </a>
+            </p>
+        </div>
+    </div>
+
+  <div class="quarto-title-meta column-page-right">
+
+        
+      <div>
+      <div class="quarto-title-meta-heading">Fecha de publicación</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">11 de noviembre de 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="page-columns page-rows-contents page-layout-full toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#fundamentos-de-estimación-de-parámetros" id="toc-fundamentos-de-estimación-de-parámetros" class="nav-link active" data-scroll-target="#fundamentos-de-estimación-de-parámetros"><span class="header-section-number">1</span> Fundamentos de estimación de parámetros</a>
+  <ul class="collapse">
+  <li><a href="#estimación-puntual" id="toc-estimación-puntual" class="nav-link" data-scroll-target="#estimación-puntual"><span class="header-section-number">1.1</span> Estimación puntual</a></li>
+  <li><a href="#estimación-por-intervalos-de-confianza" id="toc-estimación-por-intervalos-de-confianza" class="nav-link" data-scroll-target="#estimación-por-intervalos-de-confianza"><span class="header-section-number">1.2</span> Estimación por intervalos de confianza</a></li>
+  </ul></li>
+  <li><a href="#ejemplos-de-intervalos-de-confianza-en-educación" id="toc-ejemplos-de-intervalos-de-confianza-en-educación" class="nav-link" data-scroll-target="#ejemplos-de-intervalos-de-confianza-en-educación"><span class="header-section-number">2</span> Ejemplos de intervalos de confianza en educación</a>
+  <ul class="collapse">
+  <li><a href="#ejemplos-de-intervalos-de-confianza-aplicados-a-la-educación" id="toc-ejemplos-de-intervalos-de-confianza-aplicados-a-la-educación" class="nav-link" data-scroll-target="#ejemplos-de-intervalos-de-confianza-aplicados-a-la-educación"><span class="header-section-number">2.1</span> Ejemplos de intervalos de confianza aplicados a la educación</a></li>
+  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones"><span class="header-section-number">2.2</span> Conclusiones</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<div style="position:absolute; top:20px; right:10px;">
+<p><img src="LOGO/logo_ut.png" width="150"></p>
+</div>
+<div style="position:absolute; top:0px; left:10px;">
+<p><img src="LOGO/logo_lm.png" width="150"></p>
+</div>
+<style>
+body{
+  background-color:#fcfced;
+  font-size:130%;
+  text-align:justify;
+}
+
+.quarto-title-banner {
+  padding-bottom: 15px !important;
+}
+</style>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">6</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nivel <span class="ot">&lt;-</span> <span class="fl">0.95</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> nivel</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="dv">1</span> <span class="sc">-</span> alpha<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>redondear <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">d =</span> <span class="dv">3</span>) <span class="fu">round</span>(x, d)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>intervalo <span class="ot">&lt;-</span> <span class="cf">function</span>(estimacion, margen) <span class="fu">c</span>(<span class="at">inferior =</span> estimacion<span class="sc">-</span>margen, <span class="at">superior =</span> estimacion<span class="sc">+</span>margen)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="fundamentos-de-estimación-de-parámetros" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Fundamentos de estimación de parámetros</h1>
+<section id="estimación-puntual" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="estimación-puntual"><span class="header-section-number">1.1</span> Estimación puntual</h2>
+<ul>
+<li>INTRODUCCIÓN</li>
+</ul>
+<p>En estadística inferencial se estudia una <strong>población</strong> mediante una <strong>muestra aleatoria</strong>. Se llama <em>parámetro</em> a una característica numérica desconocida de la población, como la media <span class="math inline">\mu</span>, la proporción <span class="math inline">p</span> o la varianza <span class="math inline">\sigma^2</span>. Un <strong>estadístico</strong> es una función de los datos muestrales. Cuando se usa para aproximar un parámetro recibe el nombre de <strong>estimador</strong> <span class="math inline">\widehat\theta</span>; el número calculado con una muestra concreta es la <strong>estimación</strong>.</p>
+<p><span class="math display">\widehat\theta=T(X_1,X_2,\ldots,X_n).</span></p>
+<p>Por ejemplo, si se desea conocer la nota media de todos los estudiantes de una institución, la media de una muestra aleatoria es una estimación puntual de <span class="math inline">\mu</span>:</p>
+<p><span class="math display">\overline X=\frac{1}{n}\sum_{i=1}^n X_i.</span></p>
+<p>La estimación puntual es sencilla, pero no expresa directamente la incertidumbre muestral. Esa limitación motiva los intervalos de confianza.</p>
+<ul>
+<li>Propiedades de los estimadores</li>
+</ul>
+<p><strong>A. Insesgadez.</strong> Un estimador es insesgado si su esperanza coincide con el parámetro:</p>
+<p><span class="math display">\operatorname E(\widehat\theta)=\theta.</span></p>
+<p>Para una muestra aleatoria con media <span class="math inline">\mu</span> y varianza finita <span class="math inline">\sigma^2</span>, se cumple <span class="math inline">\operatorname E(\overline X)=\mu</span>. Para la varianza conviene distinguir:</p>
+<p><span class="math display">s_n^2=\frac1n\sum_{i=1}^n(X_i-\overline X)^2,\qquad S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\overline X)^2.</span></p>
+<p>El primero es sesgado, pues <span class="math inline">\operatorname E(s_n^2)=\frac{n-1}{n}\sigma^2</span>; el segundo es insesgado, pues <span class="math inline">\operatorname E(S^2)=\sigma^2</span>.</p>
+<p><strong>B. Consistencia.</strong> Un estimador es consistente cuando se acerca al parámetro al crecer la muestra:</p>
+<p><span class="math display">\widehat\theta_n\xrightarrow{P}\theta,\qquad\text{equivalentemente}\quad
+\lim_{n\to\infty}P(|\widehat\theta_n-\theta|&gt;\varepsilon)=0\quad(\varepsilon&gt;0).</span></p>
+<p>Una condición <strong>suficiente</strong>, aunque no necesaria, es que <span class="math inline">\operatorname E(\widehat\theta_n)\to\theta</span> y <span class="math inline">\operatorname{Var}(\widehat\theta_n)\to0</span>. En particular, <span class="math inline">\operatorname{Var}(\overline X)=\sigma^2/n\to0</span>.</p>
+<p><strong>C. Eficiencia.</strong> Entre estimadores insesgados de un mismo parámetro, y bajo condiciones comparables, se prefiere el de menor varianza. Para dos estimadores:</p>
+<p><span class="math display">\operatorname{Var}(\widehat\theta_1)&lt;\operatorname{Var}(\widehat\theta_2)\ \Longrightarrow\ \widehat\theta_1\text{ es más eficiente}.</span></p>
+<p><strong>Importante:</strong> un estimador con varianza menor puede tener más sesgo. Si los estimadores son sesgados, resulta útil comparar el error cuadrático medio <span class="math inline">\operatorname{ECM}(\widehat\theta)=\operatorname{Var}(\widehat\theta)+\operatorname{Sesgo}(\widehat\theta)^2</span>.</p>
+<ul>
+<li>MÉTODOS DE CÁLCULO ESTIMADORES</li>
+</ul>
+<p><strong>A. Método de los momentos.</strong> Se igualan los momentos teóricos de una distribución a los momentos de la muestra y se despejan los parámetros. Si <span class="math inline">X</span> es Bernoulli<span class="math inline">(p)</span>, <span class="math inline">\operatorname E(X)=p</span>, por lo que:</p>
+<p><span class="math display">\widehat p_{\mathrm{MM}}=\overline X.</span></p>
+<p><strong>B. Máxima verosimilitud.</strong> Se busca el valor del parámetro que hace más probables los datos observados. Si las observaciones son independientes:</p>
+<p><span class="math display">L(\theta)=\prod_{i=1}^n f(x_i;\theta),\qquad
+\ell(\theta)=\log L(\theta).</span></p>
+<p>Para un máximo interior diferenciable se busca una solución de <span class="math inline">\ell'(\theta)=0</span> y se comprueba que sea un máximo; también hay que considerar los límites del espacio paramétrico. Para una muestra Bernoulli:</p>
+<p><span class="math display">L(p)=p^{\sum x_i}(1-p)^{n-\sum x_i},</span> <span class="math display">\ell'(p)=\frac{\sum x_i}{p}-\frac{n-\sum x_i}{1-p}=0
+\quad\Longrightarrow\quad \widehat p_{\mathrm{MV}}=\frac{\sum x_i}{n}.</span></p>
+<p>Los estimadores de máxima verosimilitud suelen ser consistentes, asintóticamente normales y eficientes <strong>bajo condiciones de regularidad</strong>. La propiedad de invariancia indica que si <span class="math inline">\widehat\theta</span> maximiza la verosimilitud, <span class="math inline">g(\widehat\theta)</span> estima por máxima verosimilitud <span class="math inline">g(\theta)</span>, con las condiciones pertinentes.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ejemplo: 18 de 30 estudiantes completan una actividad</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>respuestas <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">18</span>), <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">12</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(respuestas) <span class="co"># momentos y máxima verosimilitud: p estimada = 0.60</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6</code></pre>
+</div>
+</div>
+</section>
+<section id="estimación-por-intervalos-de-confianza" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="estimación-por-intervalos-de-confianza"><span class="header-section-number">1.2</span> Estimación por intervalos de confianza</h2>
+<p>Un intervalo de confianza (IC) es un procedimiento que produce dos límites a partir de los datos: <span class="math inline">[L(X),U(X)]</span>. Su <strong>nivel de confianza</strong> <span class="math inline">1-\alpha</span> describe la cobertura del procedimiento en repeticiones del muestreo:</p>
+<p><span class="math display">P_\theta\big(L(X)\le\theta\le U(X)\big)=1-\alpha.</span></p>
+<p>Por ejemplo, el 95 % significa que, si se repite el muestreo muchas veces y se construye el IC del mismo modo, aproximadamente 95 de cada 100 intervalos contendrán el parámetro verdadero. <strong>No</strong> significa que, después de observar la muestra, el parámetro fijo tenga una probabilidad del 95 % de estar dentro de ese intervalo.</p>
+<p>Para intervalos simétricos se utiliza:</p>
+<p><span class="math display">IC=\text{estimación puntual}\ \pm\ \text{valor crítico}\times\text{error estándar}.</span></p>
+<p>El <strong>margen de error</strong> <span class="math inline">E</span> es la semiamplitud: <span class="math inline">E=(U-L)/2</span>. Se emplean las distribuciones normal estándar <span class="math inline">Z</span>, <span class="math inline">t</span> de Student, ji-cuadrado <span class="math inline">\chi^2</span> o <span class="math inline">F</span>, según el parámetro y los supuestos. En este material <span class="math inline">z_{1-\alpha/2}=\Phi^{-1}(1-\alpha/2)</span> y <span class="math inline">t_{1-\alpha/2,\nu}</span> es el cuantil acumulado correspondiente.</p>
+<ul>
+<li>CASOS PARTICULARES: Mapa de selección</li>
+</ul>
+<style>
+.tabla-estimacion {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px auto;
+  font-size: 16px;
+  text-align: center;
+}
+
+.tabla-estimacion th {
+  background-color: #AE45FF;
+  color: #000000;
+  padding: 14px;
+  border: 2px solid #444444;
+}
+
+.tabla-estimacion td {
+  padding: 12px;
+  border: 1px solid #666666;
+  color: #000000;
+}
+
+.tabla-estimacion tbody tr:nth-child(even) {
+  background-color: #eee1ff;
+}
+
+.tabla-estimacion tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.tabla-estimacion tbody tr:hover {
+  background-color: #d9b3ff;
+}
+</style>
+
+
+<table class="tabla-estimacion caption-top table">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Parámetro</th>
+<th data-quarto-table-cell-role="th">Situación</th>
+<th data-quarto-table-cell-role="th">Distribución</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Media μ</td>
+<td>σ conocida</td>
+<td>Normal Z</td>
+</tr>
+<tr class="even">
+<td>Media μ</td>
+<td>σ desconocida</td>
+<td>t de Student</td>
+</tr>
+<tr class="odd">
+<td>Proporción p</td>
+<td>Aproximación de muestra grande</td>
+<td>Normal Z</td>
+</tr>
+<tr class="even">
+<td>Varianza σ²</td>
+<td>Población normal</td>
+<td>χ²</td>
+</tr>
+<tr class="odd">
+<td>Diferencia μ₁ − μ₂</td>
+<td>Varianzas conocidas</td>
+<td>Normal Z</td>
+</tr>
+<tr class="even">
+<td>Diferencia μ₁ − μ₂</td>
+<td>Varianzas desconocidas e iguales</td>
+<td>t agrupada</td>
+</tr>
+<tr class="odd">
+<td>Diferencia μ₁ − μ₂</td>
+<td>Varianzas desconocidas y distintas</td>
+<td>t de Welch</td>
+</tr>
+<tr class="even">
+<td>Diferencia p₁ − p₂</td>
+<td>Dos muestras independientes grandes</td>
+<td>Normal Z</td>
+</tr>
+<tr class="odd">
+<td>Media de diferencias pareadas</td>
+<td>Mediciones antes/después</td>
+<td>t pareada</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>CONDICIONES Y PRECAUCIONES</li>
+</ul>
+<p>La selección aleatoria y la independencia son fundamentales. Para medias, la distribución normal de la población permite inferencia exacta con <span class="math inline">t</span> (si se desconoce la varianza); con muestras grandes puede utilizarse una aproximación por el teorema central del límite. Para proporciones, los intervalos de tipo Wald presentados en la hoja de fórmulas son aproximados y pueden funcionar mal en muestras pequeñas o proporciones extremas. Para varianzas, la normalidad de la población es especialmente importante. Para datos antes/después, deben analizarse las <strong>diferencias dentro de cada estudiante</strong>, no tratar las dos mediciones como grupos independientes.</p>
+<ul>
+<li>PRECISIÓN Y TAMAÑO DE LA MUESTRA</li>
+</ul>
+<p>En general, aumentar el nivel de confianza ensancha el IC; aumentar <span class="math inline">n</span> disminuye el error estándar. Para estimar una media con desviación poblacional conocida y margen de error máximo <span class="math inline">E</span>:</p>
+<p><span class="math display">E=z_{1-\alpha/2}\frac{\sigma}{\sqrt n},\qquad
+n=\left\lceil\left(\frac{z_{1-\alpha/2}\sigma}{E}\right)^2\right\rceil.</span></p>
+<p>Para una proporción, usando un valor de planificación <span class="math inline">p_0</span>:</p>
+<p><span class="math display">n=\left\lceil\frac{z_{1-\alpha/2}^2p_0(1-p_0)}{E^2}\right\rceil.</span></p>
+<p>Si no se conoce <span class="math inline">p_0</span>, elegir <span class="math inline">0.5</span> produce un tamaño conservador bajo muestreo aleatorio simple. Cuando <span class="math inline">\sigma</span> es desconocida, el cálculo con <span class="math inline">t</span> depende de <span class="math inline">n</span> y puede resolverse iterativamente usando una desviación piloto. Estas expresiones no incorporan corrección por población finita, diseño complejo ni pérdidas por no respuesta.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Planeación educativa: precisión de 3 puntos en una prueba,</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># sigma estimada previamente en 12 puntos, confianza del 95 %</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ceiling</span>((<span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">*</span><span class="dv">12</span><span class="sc">/</span><span class="dv">3</span>)<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 62</code></pre>
+</div>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Proporción con error de 5 puntos porcentuales</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ceiling</span>(<span class="fu">qnorm</span>(<span class="fl">0.975</span>)<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="fl">0.5</span><span class="sc">*</span><span class="fl">0.5</span><span class="sc">/</span><span class="fl">0.05</span><span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 385</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="ejemplos-de-intervalos-de-confianza-en-educación" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Ejemplos de intervalos de confianza en educación</h1>
+<section id="ejemplos-de-intervalos-de-confianza-aplicados-a-la-educación" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="ejemplos-de-intervalos-de-confianza-aplicados-a-la-educación"><span class="header-section-number">2.1</span> Ejemplos de intervalos de confianza aplicados a la educación</h2>
+<p>A continuación, se presentan ocho ejemplos prácticos de intervalos de confianza contextualizados en el ámbito educativo. Cada ejercicio se desarrolla con un nivel de confianza del 95 % e incluye el planteamiento de la situación, la fórmula estadística correspondiente, el procedimiento de cálculo, la interpretación de los resultados y su representación gráfica.</p>
+<p><strong>Para visualizar el desarrollo de cada ejercicio, haga clic sobre el ejemplo de su interés.</strong></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 1. Media con varianza poblacional conocida">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 1. Media con varianza poblacional conocida
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Un distrito educativo desea estimar el puntaje medio de comprensión lectora. Se selecciona una muestra aleatoria de 100 estudiantes. Se supone conocida una desviación estándar poblacional de 12 puntos.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+IC_{\mu}=\overline{x}\pm z_{1-\alpha/2}
+\frac{\sigma}{\sqrt{n}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">101</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">72</span>, sigma)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>xbar <span class="ot">&lt;-</span> <span class="fu">mean</span>(datos)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> z<span class="sc">*</span>sigma<span class="sc">/</span><span class="fu">sqrt</span>(n)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(xbar, margen)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}=%.3f,</span><span class="sc">\\</span><span class="st">quad </span><span class="sc">\\</span><span class="st">sigma=%.0f,</span><span class="sc">\\</span><span class="st">quad n=%d"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  xbar, sigma, n</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}=71.554,\quad \sigma=12,\quad n=100
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm1.960</span><span class="sc">\\</span><span class="st">left(</span><span class="sc">\\</span><span class="st">frac{%.0f}{</span><span class="sc">\\</span><span class="st">sqrt{%d}}</span><span class="sc">\\</span><span class="st">right)"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  xbar, sigma, n</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=71.554\pm1.960\left(\frac{12}{\sqrt{100}}\right)
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  xbar, margen</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=71.554\pm2.352
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[69.202,\ 73.906]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(datos,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">12</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> lila,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"white"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Puntajes de comprensión lectora"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Puntaje"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Frecuencia"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> xbar, <span class="at">col =</span> morado, <span class="at">lwd =</span> <span class="dv">3</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> ic, <span class="at">col =</span> rosa, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Media muestral"</span>, <span class="st">"IC 95%"</span>),</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(morado, rosa),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>),</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> Con un nivel de confianza del 95 %, el intervalo calculado estima el promedio poblacional de comprensión lectora. Las líneas rojas representan los límites del intervalo y la línea morada indica la media muestral.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 2. Media con varianza poblacional desconocida">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 2. Media con varianza poblacional desconocida
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se desea estimar el tiempo medio semanal de estudio autónomo de estudiantes universitarios. Se seleccionan aleatoriamente 25 estudiantes y se supone una población aproximadamente normal.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+IC_{\mu}=\overline{x}\pm t_{1-\alpha/2,n-1}
+\frac{S}{\sqrt{n}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">202</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="fl">8.4</span>, <span class="fl">2.5</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>xbar <span class="ot">&lt;-</span> <span class="fu">mean</span>(datos)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">sd</span>(datos)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>gl <span class="ot">&lt;-</span> n<span class="dv">-1</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>tcrit <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="dv">1</span><span class="sc">-</span>alpha<span class="sc">/</span><span class="dv">2</span>, gl)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> tcrit<span class="sc">*</span>s<span class="sc">/</span><span class="fu">sqrt</span>(n)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(xbar, margen)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}=%.3f,</span><span class="sc">\\</span><span class="st">quad S=%.3f,</span><span class="sc">\\</span><span class="st">quad n=%d"</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  xbar, s, n</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}=8.636,\quad S=2.464,\quad n=25
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"t_{0.975,%d}=%.3f"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  gl, tcrit</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+t_{0.975,24}=2.064
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f</span><span class="sc">\\</span><span class="st">left(</span><span class="sc">\\</span><span class="st">frac{%.3f}{</span><span class="sc">\\</span><span class="st">sqrt{%d}}</span><span class="sc">\\</span><span class="st">right)"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  xbar, tcrit, s, n</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=8.636\pm2.064\left(\frac{2.464}{\sqrt{25}}\right)
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  xbar, margen</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=8.636\pm1.017
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[7.619,\ 9.653]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(datos,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">8</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"#80DEEA"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"white"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Horas semanales de estudio autónomo"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Horas de estudio"</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Frecuencia"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> xbar, <span class="at">col =</span> <span class="st">"#006064"</span>, <span class="at">lwd =</span> <span class="dv">3</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> ic, <span class="at">col =</span> rosa, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Media"</span>, <span class="st">"IC 95%"</span>),</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#006064"</span>, rosa),</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>),</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo estima, con un nivel de confianza del 95 %, el promedio poblacional de horas semanales dedicadas al estudio autónomo. Se utiliza la distribución t de Student porque la desviación estándar poblacional es desconocida.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 3. Proporción poblacional">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 3. Proporción poblacional
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Una institución educativa desea estimar la proporción de estudiantes que utilizan semanalmente la biblioteca digital. Se encuesta aleatoriamente a 200 estudiantes.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+\widehat{p}=\frac{x}{n}
+</span></p>
+<p><span class="math display">
+IC_p=\widehat{p}\pm z_{1-\alpha/2}
+\sqrt{\frac{\widehat{p}(1-\widehat{p})}{n}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">303</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.75</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>exitos <span class="ot">&lt;-</span> <span class="fu">sum</span>(datos)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>phat <span class="ot">&lt;-</span> exitos<span class="sc">/</span>n</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> z<span class="sc">*</span><span class="fu">sqrt</span>(phat<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>phat)<span class="sc">/</span>n)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(phat, margen)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">widehat{p}=</span><span class="sc">\\</span><span class="st">frac{%d}{%d}=%.3f"</span>,</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  exitos, n, phat</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\widehat{p}=\frac{147}{200}=0.735
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm1.960</span><span class="sc">\\</span><span class="st">sqrt{</span><span class="sc">\\</span><span class="st">frac{%.3f(1-%.3f)}{%d}}"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  phat, phat, phat, n</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=0.735\pm1.960\sqrt{\frac{0.735(1-0.735)}{200}}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  phat, margen</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=0.735\pm0.061
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.2f</span><span class="sc">\\</span><span class="st">%%,</span><span class="sc">\\</span><span class="st"> %.2f</span><span class="sc">\\</span><span class="st">%%]}"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">100</span><span class="sc">*</span>ic[<span class="dv">1</span>], <span class="dv">100</span><span class="sc">*</span>ic[<span class="dv">2</span>]</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[67.38\%,\ 79.62\%]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>frecuencias <span class="ot">&lt;-</span> <span class="fu">c</span>(exitos, n<span class="sc">-</span>exitos)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>bp <span class="ot">&lt;-</span> <span class="fu">barplot</span>(frecuencias,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">names.arg =</span> <span class="fu">c</span>(<span class="st">"Utilizan"</span>, <span class="st">"No utilizan"</span>),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">col =</span> <span class="fu">c</span>(morado, <span class="st">"#FFB74D"</span>),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">border =</span> <span class="cn">NA</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, n),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">main =</span> <span class="st">"Uso de la biblioteca digital"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab =</span> <span class="st">"Número de estudiantes"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(bp, frecuencias<span class="sc">+</span><span class="dv">8</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> frecuencias,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">font =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo del 95 % estima la proporción poblacional de estudiantes que utilizan la biblioteca digital semanalmente. El gráfico muestra las frecuencias observadas en la muestra.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 4. Varianza poblacional">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 4. Varianza poblacional
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se desea estimar la variabilidad de los puntajes de matemáticas de una población estudiantil. Se seleccionan aleatoriamente 20 estudiantes y se supone normalidad poblacional.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+IC_{\sigma^2}=
+\left[
+\frac{(n-1)S^2}{\chi^2_{1-\alpha/2,n-1}},
+\frac{(n-1)S^2}{\chi^2_{\alpha/2,n-1}}
+\right]
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">404</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="dv">75</span>, <span class="dv">8</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">var</span>(datos)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>gl <span class="ot">&lt;-</span> n<span class="dv">-1</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>chi_inf <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(alpha<span class="sc">/</span><span class="dv">2</span>, gl)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>chi_sup <span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span><span class="sc">-</span>alpha<span class="sc">/</span><span class="dv">2</span>, gl)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">inferior =</span> gl<span class="sc">*</span>s2<span class="sc">/</span>chi_sup,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">superior =</span> gl<span class="sc">*</span>s2<span class="sc">/</span>chi_inf</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"S^2=%.3f,</span><span class="sc">\\</span><span class="st">quad n=%d,</span><span class="sc">\\</span><span class="st">quad gl=%d"</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>  s2, n, gl</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+S^2=49.215,\quad n=20,\quad gl=19
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">chi^2_{0.025,%d}=%.3f,</span><span class="sc">\\</span><span class="st">quad </span><span class="sc">\\</span><span class="st">chi^2_{0.975,%d}=%.3f"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  gl, chi_inf, gl, chi_sup</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\chi^2_{0.025,19}=8.907,\quad \chi^2_{0.975,19}=32.852
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=</span><span class="sc">\\</span><span class="st">left[</span><span class="sc">\\</span><span class="st">frac{%d(%.3f)}{%.3f},</span><span class="sc">\\</span><span class="st"> </span><span class="sc">\\</span><span class="st">frac{%d(%.3f)}{%.3f}</span><span class="sc">\\</span><span class="st">right]"</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  gl, s2, chi_sup, gl, s2, chi_inf</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=\left[\frac{19(49.215)}{32.852},\ \frac{19(49.215)}{8.907}\right]
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[28.463,\ 104.988]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{</span><span class="sc">\\</span><span class="st">sigma,95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]"</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>(ic[<span class="dv">1</span>]), <span class="fu">sqrt</span>(ic[<span class="dv">2</span>])</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{\sigma,95\%}=[5.335,\ 10.246]
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">qchisq</span>(<span class="fl">0.999</span>, gl), <span class="at">length.out =</span> <span class="dv">600</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">dchisq</span>(x, gl)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">type =</span> <span class="st">"l"</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> morado, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Distribución ji-cuadrado"</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Valor del estadístico"</span>,</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Densidad"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>zona <span class="ot">&lt;-</span> x <span class="sc">&gt;=</span> chi_inf <span class="sc">&amp;</span> x <span class="sc">&lt;=</span> chi_sup</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(chi_inf, x[zona], chi_sup),</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, y[zona], <span class="dv">0</span>),</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">adjustcolor</span>(lila, <span class="at">alpha.f =</span> <span class="fl">0.65</span>),</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, y, <span class="at">col =</span> morado, <span class="at">lwd =</span> <span class="dv">3</span>)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">c</span>(chi_inf, chi_sup),</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> rosa, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Densidad"</span>, <span class="st">"Valores críticos"</span>),</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(morado, rosa),</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>),</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo estima la varianza poblacional de los puntajes, expresada en puntos cuadrados. La raíz cuadrada de sus extremos proporciona un intervalo para la desviación estándar.</p>
+<p>La región sombreada representa el 95 % central de la distribución ji-cuadrado utilizada en el procedimiento.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 5. Diferencia de medias con varianzas conocidas">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 5. Diferencia de medias con varianzas conocidas
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se comparan los puntajes de matemáticas de dos instituciones independientes. Se consideran conocidas las desviaciones estándar poblacionales: 10 puntos en A y 9 puntos en B.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm z_{1-\alpha/2}
+\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">505</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="dv">64</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="dv">81</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>sigma1 <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>sigma2 <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n1, <span class="dv">78</span>, sigma1)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n2, <span class="dv">74</span>, sigma2)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(A)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(B)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>dif <span class="ot">&lt;-</span> x1<span class="sc">-</span>x2</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> z<span class="sc">*</span><span class="fu">sqrt</span>(sigma1<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>n1<span class="sc">+</span>sigma2<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>n2)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(dif, margen)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}_1=%.3f,</span><span class="sc">\\</span><span class="st">quad </span><span class="sc">\\</span><span class="st">bar{x}_2=%.3f"</span>,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  x1, x2</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}_1=76.248,\quad \bar{x}_2=74.029
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}_1-</span><span class="sc">\\</span><span class="st">bar{x}_2=%.3f-%.3f=%.3f"</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  x1, x2, dif</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}_1-\bar{x}_2=76.248-74.029=2.219
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm1.960</span><span class="sc">\\</span><span class="st">sqrt{</span><span class="sc">\\</span><span class="st">frac{%d}{%d}+</span><span class="sc">\\</span><span class="st">frac{%d}{%d}}"</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  dif, sigma1<span class="sc">^</span><span class="dv">2</span>, n1, sigma2<span class="sc">^</span><span class="dv">2</span>, n2</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=2.219\pm1.960\sqrt{\frac{100}{64}+\frac{81}{81}}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  dif, margen</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=2.219\pm3.137
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[-0.918,\ 5.357]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>dA <span class="ot">&lt;-</span> <span class="fu">density</span>(A)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>dB <span class="ot">&lt;-</span> <span class="fu">density</span>(B)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dA,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> morado, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">c</span>(dA<span class="sc">$</span>x, dB<span class="sc">$</span>x)),</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(dA<span class="sc">$</span>y,dB<span class="sc">$</span>y)<span class="sc">*</span><span class="fl">1.2</span>),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Comparación de puntajes entre instituciones"</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Puntaje"</span>,</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Densidad"</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dB, <span class="at">col =</span> turquesa, <span class="at">lwd =</span> <span class="dv">3</span>)</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> x1, <span class="at">col =</span> morado, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> x2, <span class="at">col =</span> turquesa, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Institución A"</span>, <span class="st">"Institución B"</span>),</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(morado, turquesa),</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo del 95 % estima la diferencia entre las medias poblacionales de las dos instituciones. Si contiene cero, no se descarta una diferencia nula al nivel bilateral del 5 %. Si no lo contiene, existe evidencia estadística de una diferencia.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 6. Diferencia de medias con varianzas desconocidas e iguales">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 6. Diferencia de medias con varianzas desconocidas e iguales
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se comparan dos metodologías de enseñanza aplicadas a grupos independientes. Se supone que las varianzas poblacionales son iguales, aunque desconocidas.</p>
+<p><strong>Fórmulas:</strong></p>
+<p><span class="math display">
+S_p^2=
+\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}
+{n_1+n_2-2}
+</span></p>
+<p><span class="math display">
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,n_1+n_2-2}
+S_p\sqrt{\frac1{n_1}+\frac1{n_2}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">606</span>)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="dv">28</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n1, <span class="dv">82</span>, <span class="dv">8</span>)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n2, <span class="dv">77</span>, <span class="dv">8</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(A)</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(B)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">sd</span>(A)</span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">sd</span>(B)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>gl <span class="ot">&lt;-</span> n1<span class="sc">+</span>n2<span class="dv">-2</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>sp2 <span class="ot">&lt;-</span> ((n1<span class="dv">-1</span>)<span class="sc">*</span>s1<span class="sc">^</span><span class="dv">2</span><span class="sc">+</span>(n2<span class="dv">-1</span>)<span class="sc">*</span>s2<span class="sc">^</span><span class="dv">2</span>)<span class="sc">/</span>gl</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>sp <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(sp2)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>tcrit <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="dv">1</span><span class="sc">-</span>alpha<span class="sc">/</span><span class="dv">2</span>, gl)</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>dif <span class="ot">&lt;-</span> x1<span class="sc">-</span>x2</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> tcrit<span class="sc">*</span>sp<span class="sc">*</span><span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">/</span>n1<span class="sc">+</span><span class="dv">1</span><span class="sc">/</span>n2)</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(dif, margen)</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}_1=%.3f,</span><span class="sc">\\</span><span class="st">quad </span><span class="sc">\\</span><span class="st">bar{x}_2=%.3f"</span>,</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  x1, x2</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}_1=82.823,\quad \bar{x}_2=74.457
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"S_p^2=</span><span class="sc">\\</span><span class="st">frac{%d(%.3f)^2+%d(%.3f)^2}{%d}=%.3f"</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  n1<span class="dv">-1</span>, s1, n2<span class="dv">-1</span>, s2, gl, sp2</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+S_p^2=\frac{29(8.523)^2+27(8.579)^2}{56}=73.104
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f(%.3f)</span><span class="sc">\\</span><span class="st">sqrt{</span><span class="sc">\\</span><span class="st">frac1{%d}+</span><span class="sc">\\</span><span class="st">frac1{%d}}"</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  dif, tcrit, sp, n1, n2</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=8.367\pm2.003(8.550)\sqrt{\frac1{30}+\frac1{28}}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  dif, margen</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=8.367\pm4.501
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[3.866,\ 12.867]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>cortes <span class="ot">&lt;-</span> <span class="fu">pretty</span>(<span class="fu">range</span>(<span class="fu">c</span>(A,B)), <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(A,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> cortes,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">freq =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">adjustcolor</span>(morado, <span class="at">alpha.f =</span> <span class="fl">0.5</span>),</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"white"</span>,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Puntajes por metodología"</span>,</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Puntaje"</span>,</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Densidad"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.10</span>))</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(B,</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> cortes,</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">freq =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">adjustcolor</span>(turquesa, <span class="at">alpha.f =</span> <span class="fl">0.5</span>),</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"white"</span>,</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Metodología A"</span>, <span class="st">"Metodología B"</span>),</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="fu">c</span>(morado, turquesa),</span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo del 95 % estima la diferencia entre los promedios poblacionales de ambas metodologías. Se utiliza una varianza agrupada bajo el supuesto de igualdad de varianzas poblacionales.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 7. Diferencia de medias con varianzas distintas (Welch)">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 7. Diferencia de medias con varianzas distintas (Welch)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se compara el rendimiento en resolución de problemas de dos colegios independientes. Las varianzas poblacionales son desconocidas y no se supone que sean iguales.</p>
+<p><strong>Fórmulas:</strong></p>
+<p><span class="math display">
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,\nu}
+\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}
+</span></p>
+<p><span class="math display">
+\nu\approx
+\frac{(S_1^2/n_1+S_2^2/n_2)^2}
+{\dfrac{(S_1^2/n_1)^2}{n_1-1}
++\dfrac{(S_2^2/n_2)^2}{n_2-1}}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">707</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="dv">35</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n1, <span class="dv">85</span>, <span class="dv">12</span>)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n2, <span class="dv">79</span>, <span class="dv">7</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(A)</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(B)</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">sd</span>(A)</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">sd</span>(B)</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> s1<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>n1</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> s2<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>n2</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>nu <span class="ot">&lt;-</span> (a<span class="sc">+</span>b)<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(a<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(n1<span class="dv">-1</span>)<span class="sc">+</span>b<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span>(n2<span class="dv">-1</span>))</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>tcrit <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="dv">1</span><span class="sc">-</span>alpha<span class="sc">/</span><span class="dv">2</span>, nu)</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>dif <span class="ot">&lt;-</span> x1<span class="sc">-</span>x2</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> tcrit<span class="sc">*</span><span class="fu">sqrt</span>(a<span class="sc">+</span>b)</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(dif, margen)</span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">bar{x}_1=%.3f,</span><span class="sc">\\</span><span class="st">quad </span><span class="sc">\\</span><span class="st">bar{x}_2=%.3f"</span>,</span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>  x1, x2</span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\bar{x}_1=86.212,\quad \bar{x}_2=79.674
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">nu=</span><span class="sc">\\</span><span class="st">frac{(%.3f+%.3f)^2}{</span><span class="sc">\\</span><span class="st">frac{(%.3f)^2}{%d}+</span><span class="sc">\\</span><span class="st">frac{(%.3f)^2}{%d}}=%.3f"</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  a, b, a, n1<span class="dv">-1</span>, b, n2<span class="dv">-1</span>, nu</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\nu=\frac{(5.750+1.152)^2}{\frac{(5.750)^2}{24}+\frac{(1.152)^2}{34}}=33.624
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f</span><span class="sc">\\</span><span class="st">sqrt{</span><span class="sc">\\</span><span class="st">frac{(%.3f)^2}{%d}+</span><span class="sc">\\</span><span class="st">frac{(%.3f)^2}{%d}}"</span>,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  dif, tcrit, s1, n1, s2, n2</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=6.538\pm2.033\sqrt{\frac{(11.989)^2}{25}+\frac{(6.349)^2}{35}}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  dif, margen</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=6.538\pm5.341
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.3f,</span><span class="sc">\\</span><span class="st"> %.3f]}"</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  ic[<span class="dv">1</span>], ic[<span class="dv">2</span>]</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[1.197,\ 11.879]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>dA <span class="ot">&lt;-</span> <span class="fu">density</span>(A)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>dB <span class="ot">&lt;-</span> <span class="fu">density</span>(B)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dA,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"#E91E63"</span>,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">range</span>(<span class="fu">c</span>(dA<span class="sc">$</span>x,dB<span class="sc">$</span>x)),</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fu">max</span>(dA<span class="sc">$</span>y,dB<span class="sc">$</span>y)<span class="sc">*</span><span class="fl">1.2</span>),</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Rendimiento en resolución de problemas"</span>,</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Puntaje"</span>,</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Densidad"</span>)</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dB, <span class="at">col =</span> azul, <span class="at">lwd =</span> <span class="dv">3</span>)</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> x1, <span class="at">col =</span> <span class="st">"#E91E63"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> x2, <span class="at">col =</span> azul, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Colegio A"</span>, <span class="st">"Colegio B"</span>),</span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#E91E63"</span>, azul),</span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo del 95 % estima la diferencia de medias poblacionales sin imponer igualdad de varianzas. La gráfica permite comparar visualmente la dispersión de los puntajes de ambos colegios.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Ejemplo 8. Diferencia de proporciones">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ejemplo 8. Diferencia de proporciones
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Situación.</strong> Se comparan las proporciones de estudiantes que entregan puntualmente sus proyectos en dos colegios. Se seleccionan muestras independientes de 120 estudiantes del colegio A y 100 del colegio B.</p>
+<p><strong>Fórmula:</strong></p>
+<p><span class="math display">
+IC_{p_1-p_2}=
+(\widehat{p}_1-\widehat{p}_2)
+\pm z_{1-\alpha/2}
+\sqrt{
+\frac{\widehat{p}_1(1-\widehat{p}_1)}{n_1}
++
+\frac{\widehat{p}_2(1-\widehat{p}_2)}{n_2}
+}
+</span></p>
+<p><strong>Procedimiento y sustitución:</strong></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">808</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="dv">120</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n1, <span class="dv">1</span>, <span class="fl">0.70</span>)</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(n2, <span class="dv">1</span>, <span class="fl">0.60</span>)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>e1 <span class="ot">&lt;-</span> <span class="fu">sum</span>(A)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>e2 <span class="ot">&lt;-</span> <span class="fu">sum</span>(B)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> e1<span class="sc">/</span>n1</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> e2<span class="sc">/</span>n2</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>dif <span class="ot">&lt;-</span> p1<span class="sc">-</span>p2</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(p1<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p1)<span class="sc">/</span>n1<span class="sc">+</span>p2<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>p2)<span class="sc">/</span>n2)</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>margen <span class="ot">&lt;-</span> z<span class="sc">*</span>se</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>ic <span class="ot">&lt;-</span> <span class="fu">intervalo</span>(dif, margen)</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">widehat{p}_1=</span><span class="sc">\\</span><span class="st">frac{%d}{%d}=%.3f"</span>,</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>  e1, n1, p1</span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\widehat{p}_1=\frac{88}{120}=0.733
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">widehat{p}_2=</span><span class="sc">\\</span><span class="st">frac{%d}{%d}=%.3f"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  e2, n2, p2</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\widehat{p}_2=\frac{62}{100}=0.620
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=(%.3f-%.3f)</span><span class="sc">\\</span><span class="st">pm1.960</span><span class="sc">\\</span><span class="st">sqrt{</span><span class="sc">\\</span><span class="st">frac{%.3f(1-%.3f)}{%d}+</span><span class="sc">\\</span><span class="st">frac{%.3f(1-%.3f)}{%d}}"</span>,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  p1, p2, p1, p1, n1, p2, p2, n2</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=(0.733-0.620)\pm1.960\sqrt{\frac{0.733(1-0.733)}{120}+\frac{0.620(1-0.620)}{100}}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"IC_{95</span><span class="sc">\\</span><span class="st">%%}=%.3f</span><span class="sc">\\</span><span class="st">pm%.3f"</span>,</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  dif, margen</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+IC_{95\%}=0.113\pm0.124
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paso</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="sc">\\</span><span class="st">boxed{IC_{95</span><span class="sc">\\</span><span class="st">%%}=[%.2f</span><span class="sc">\\</span><span class="st">%%,</span><span class="sc">\\</span><span class="st"> %.2f</span><span class="sc">\\</span><span class="st">%%]}"</span>,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">100</span><span class="sc">*</span>ic[<span class="dv">1</span>], <span class="dv">100</span><span class="sc">*</span>ic[<span class="dv">2</span>]</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<p><span class="math display">
+\boxed{IC_{95\%}=[-1.04\%,\ 23.71\%]}
+</span></p>
+<details class="code-fold">
+<summary>Ver código</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>porcentajes <span class="ot">&lt;-</span> <span class="fu">c</span>(p1,p2)<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>bp <span class="ot">&lt;-</span> <span class="fu">barplot</span>(porcentajes,</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">names.arg =</span> <span class="fu">c</span>(<span class="st">"Colegio A"</span>, <span class="st">"Colegio B"</span>),</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">col =</span> <span class="fu">c</span>(morado, turquesa),</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">border =</span> <span class="cn">NA</span>,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>),</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">main =</span> <span class="st">"Entrega puntual de proyectos"</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">ylab =</span> <span class="st">"Porcentaje de estudiantes"</span>)</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(bp, porcentajes<span class="sc">+</span><span class="dv">5</span>,</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(porcentajes,<span class="dv">1</span>),<span class="st">"%"</span>),</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">font =</span> <span class="dv">2</span>,</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">1.2</span>)</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="EPC_files/figure-html/ejemplo-8-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+<p><strong>Interpretación.</strong> El intervalo del 95 % estima la diferencia entre las proporciones poblacionales de estudiantes que entregan puntualmente sus proyectos. Sus extremos se expresan en puntos porcentuales.</p>
+<p>Si el intervalo contiene cero, no se descarta la igualdad de proporciones poblacionales al nivel bilateral del 5 %.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusiones" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="conclusiones"><span class="header-section-number">2.2</span> Conclusiones</h2>
+<p>La estimación puntual ofrece un valor representativo de un parámetro, mientras que los intervalos de confianza comunican la incertidumbre del muestreo. La elección correcta de la fórmula depende de <strong>qué parámetro</strong> se estima, de <strong>cuántas poblaciones</strong> se comparan, de la <strong>independencia o apareamiento</strong>, del conocimiento de las varianzas y de los <strong>supuestos distribucionales</strong>. En educación, estas herramientas permiten estudiar promedios, proporciones y variabilidad de resultados sin confundir diferencias estadísticas con efectos causales.</p>
+<style>
+/* Botón flotante para volver al inicio */
+#volver-inicio {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #AE45FF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 25px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+#volver-inicio:hover {
+  background-color: #8A2BE2;
+}
+</style>
+
+<button id="volver-inicio" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Volver al inicio" aria-label="Volver al inicio">
+  ↑
+</button>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="EPC_files/libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
