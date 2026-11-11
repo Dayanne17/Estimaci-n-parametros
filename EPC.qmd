@@ -1,0 +1,1092 @@
+---
+title: "ESTIMACIÓN DE PARAMETROS E<br>INTERVALOS DE CONFIANZA"
+subtitle: "FUNDAMENTOS, PROCEDIMIENTOS Y APLICACIONES EN EDUCACIÓN"
+author: 
+  - name: Dayanne Tique Bustamante<br>Paula Andrea Saldaña Cuellar<br>Jorge Eliecer Riaño Duarte
+    affiliation: "Universidad del Tolima"
+    affiliation-url: "https://www.ut.edu.co/"
+date: today
+lang: es
+title-block-banner: "#AE45FF"
+
+format:
+  html:
+    page-layout: full
+    fontsize: 14pt
+    toc: true
+    toc-location: left
+    number-sections: true
+    code-fold: true
+    code-summary: "Ver código"
+    theme: dark
+    highlight-style: monokai
+    html-math-method: katex
+    smooth-scroll: true
+    link-external-newwindow: true
+    code-overflow: scroll
+    favicon: favicon.ico
+    
+editor: visual
+
+knitr:
+  opts_chunk:
+    message: false
+    warning: false
+    fig.align: center
+    fig.width: 6
+    fig.height: 6
+    out.width: "70%"
+---
+
+::: {style="position:absolute; top:20px; right:10px;"}
+<img src="LOGO/logo_ut.png" width="150"/>
+:::
+
+::: {style="position:absolute; top:0px; left:10px;"}
+<img src="LOGO/logo_lm.png" width="150"/>
+:::
+
+
+```{=html}
+<style>
+body{
+  background-color:#fcfced;
+  font-size:130%;
+  text-align:justify;
+}
+
+.quarto-title-banner {
+  padding-bottom: 15px !important;
+}
+</style>
+```
+
+```{r}
+#| label: configuracion
+#| echo: true
+options(digits = 6)
+nivel <- 0.95
+alpha <- 1 - nivel
+z <- qnorm(1 - alpha/2)
+redondear <- function(x, d = 3) round(x, d)
+intervalo <- function(estimacion, margen) c(inferior = estimacion-margen, superior = estimacion+margen)
+```
+
+# Fundamentos de estimación de parámetros
+
+## Estimación puntual
+
+- INTRODUCCIÓN
+
+En estadística inferencial se estudia una **población** mediante una **muestra aleatoria**. Se llama *parámetro* a una característica numérica desconocida de la población, como la media $\mu$, la proporción $p$ o la varianza $\sigma^2$. Un **estadístico** es una función de los datos muestrales. Cuando se usa para aproximar un parámetro recibe el nombre de **estimador** $\widehat\theta$; el número calculado con una muestra concreta es la **estimación**.
+
+$$\widehat\theta=T(X_1,X_2,\ldots,X_n).$$
+
+Por ejemplo, si se desea conocer la nota media de todos los estudiantes de una institución, la media de una muestra aleatoria es una estimación puntual de $\mu$:
+
+$$\overline X=\frac{1}{n}\sum_{i=1}^n X_i.$$
+
+La estimación puntual es sencilla, pero no expresa directamente la incertidumbre muestral. Esa limitación motiva los intervalos de confianza.
+
+- Propiedades de los estimadores
+
+**A. Insesgadez.** Un estimador es insesgado si su esperanza coincide con el parámetro:
+
+$$\operatorname E(\widehat\theta)=\theta.$$
+
+Para una muestra aleatoria con media $\mu$ y varianza finita $\sigma^2$, se cumple $\operatorname E(\overline X)=\mu$. Para la varianza conviene distinguir:
+
+$$s_n^2=\frac1n\sum_{i=1}^n(X_i-\overline X)^2,\qquad S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\overline X)^2.$$
+
+El primero es sesgado, pues $\operatorname E(s_n^2)=\frac{n-1}{n}\sigma^2$; el segundo es insesgado, pues $\operatorname E(S^2)=\sigma^2$.
+
+**B. Consistencia.** Un estimador es consistente cuando se acerca al parámetro al crecer la muestra:
+
+$$\widehat\theta_n\xrightarrow{P}\theta,\qquad\text{equivalentemente}\quad
+\lim_{n\to\infty}P(|\widehat\theta_n-\theta|>\varepsilon)=0\quad(\varepsilon>0).$$
+
+Una condición **suficiente**, aunque no necesaria, es que $\operatorname E(\widehat\theta_n)\to\theta$ y $\operatorname{Var}(\widehat\theta_n)\to0$. En particular, $\operatorname{Var}(\overline X)=\sigma^2/n\to0$.
+
+**C. Eficiencia.** Entre estimadores insesgados de un mismo parámetro, y bajo condiciones comparables, se prefiere el de menor varianza. Para dos estimadores:
+
+$$\operatorname{Var}(\widehat\theta_1)<\operatorname{Var}(\widehat\theta_2)\ \Longrightarrow\ \widehat\theta_1\text{ es más eficiente}.$$
+
+**Importante:** un estimador con varianza menor puede tener más sesgo. Si los estimadores son sesgados, resulta útil comparar el error cuadrático medio $\operatorname{ECM}(\widehat\theta)=\operatorname{Var}(\widehat\theta)+\operatorname{Sesgo}(\widehat\theta)^2$.
+
+- MÉTODOS DE CÁLCULO ESTIMADORES
+
+**A. Método de los momentos.** Se igualan los momentos teóricos de una distribución a los momentos de la muestra y se despejan los parámetros. Si $X$ es Bernoulli$(p)$, $\operatorname E(X)=p$, por lo que:
+
+$$\widehat p_{\mathrm{MM}}=\overline X.$$
+
+**B. Máxima verosimilitud.** Se busca el valor del parámetro que hace más probables los datos observados. Si las observaciones son independientes:
+
+$$L(\theta)=\prod_{i=1}^n f(x_i;\theta),\qquad
+\ell(\theta)=\log L(\theta).$$
+
+Para un máximo interior diferenciable se busca una solución de $\ell'(\theta)=0$ y se comprueba que sea un máximo; también hay que considerar los límites del espacio paramétrico. Para una muestra Bernoulli:
+
+$$L(p)=p^{\sum x_i}(1-p)^{n-\sum x_i},$$ $$\ell'(p)=\frac{\sum x_i}{p}-\frac{n-\sum x_i}{1-p}=0
+\quad\Longrightarrow\quad \widehat p_{\mathrm{MV}}=\frac{\sum x_i}{n}.$$
+
+Los estimadores de máxima verosimilitud suelen ser consistentes, asintóticamente normales y eficientes **bajo condiciones de regularidad**. La propiedad de invariancia indica que si $\widehat\theta$ maximiza la verosimilitud, $g(\widehat\theta)$ estima por máxima verosimilitud $g(\theta)$, con las condiciones pertinentes.
+
+```{r}
+# Ejemplo: 18 de 30 estudiantes completan una actividad
+respuestas <- c(rep(1, 18), rep(0, 12))
+mean(respuestas) # momentos y máxima verosimilitud: p estimada = 0.60
+```
+
+## Estimación por intervalos de confianza
+
+Un intervalo de confianza (IC) es un procedimiento que produce dos límites a partir de los datos: $[L(X),U(X)]$. Su **nivel de confianza** $1-\alpha$ describe la cobertura del procedimiento en repeticiones del muestreo:
+
+$$P_\theta\big(L(X)\le\theta\le U(X)\big)=1-\alpha.$$
+
+Por ejemplo, el 95 % significa que, si se repite el muestreo muchas veces y se construye el IC del mismo modo, aproximadamente 95 de cada 100 intervalos contendrán el parámetro verdadero. **No** significa que, después de observar la muestra, el parámetro fijo tenga una probabilidad del 95 % de estar dentro de ese intervalo.
+
+Para intervalos simétricos se utiliza:
+
+$$IC=\text{estimación puntual}\ \pm\ \text{valor crítico}\times\text{error estándar}.$$
+
+El **margen de error** $E$ es la semiamplitud: $E=(U-L)/2$. Se emplean las distribuciones normal estándar $Z$, $t$ de Student, ji-cuadrado $\chi^2$ o $F$, según el parámetro y los supuestos. En este material $z_{1-\alpha/2}=\Phi^{-1}(1-\alpha/2)$ y $t_{1-\alpha/2,\nu}$ es el cuantil acumulado correspondiente.
+
+- CASOS PARTICULARES: Mapa de selección
+
+```{=html}
+<style>
+.tabla-estimacion {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px auto;
+  font-size: 16px;
+  text-align: center;
+}
+
+.tabla-estimacion th {
+  background-color: #AE45FF;
+  color: #000000;
+  padding: 14px;
+  border: 2px solid #444444;
+}
+
+.tabla-estimacion td {
+  padding: 12px;
+  border: 1px solid #666666;
+  color: #000000;
+}
+
+.tabla-estimacion tbody tr:nth-child(even) {
+  background-color: #eee1ff;
+}
+
+.tabla-estimacion tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.tabla-estimacion tbody tr:hover {
+  background-color: #d9b3ff;
+}
+</style>
+
+<table class="tabla-estimacion">
+  <thead>
+    <tr>
+      <th>Parámetro</th>
+      <th>Situación</th>
+      <th>Distribución</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Media μ</td>
+      <td>σ conocida</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Media μ</td>
+      <td>σ desconocida</td>
+      <td>t de Student</td>
+    </tr>
+
+    <tr>
+      <td>Proporción p</td>
+      <td>Aproximación de muestra grande</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Varianza σ²</td>
+      <td>Población normal</td>
+      <td>χ²</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas conocidas</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas desconocidas e iguales</td>
+      <td>t agrupada</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas desconocidas y distintas</td>
+      <td>t de Welch</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia p₁ − p₂</td>
+      <td>Dos muestras independientes grandes</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Media de diferencias pareadas</td>
+      <td>Mediciones antes/después</td>
+      <td>t pareada</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+
+- CONDICIONES Y PRECAUCIONES
+
+La selección aleatoria y la independencia son fundamentales. Para medias, la distribución normal de la población permite inferencia exacta con $t$ (si se desconoce la varianza); con muestras grandes puede utilizarse una aproximación por el teorema central del límite. Para proporciones, los intervalos de tipo Wald presentados en la hoja de fórmulas son aproximados y pueden funcionar mal en muestras pequeñas o proporciones extremas. Para varianzas, la normalidad de la población es especialmente importante. Para datos antes/después, deben analizarse las **diferencias dentro de cada estudiante**, no tratar las dos mediciones como grupos independientes.
+
+- PRECISIÓN Y TAMAÑO DE LA MUESTRA
+
+En general, aumentar el nivel de confianza ensancha el IC; aumentar $n$ disminuye el error estándar. Para estimar una media con desviación poblacional conocida y margen de error máximo $E$:
+
+$$E=z_{1-\alpha/2}\frac{\sigma}{\sqrt n},\qquad
+n=\left\lceil\left(\frac{z_{1-\alpha/2}\sigma}{E}\right)^2\right\rceil.$$
+
+Para una proporción, usando un valor de planificación $p_0$:
+
+$$n=\left\lceil\frac{z_{1-\alpha/2}^2p_0(1-p_0)}{E^2}\right\rceil.$$
+
+Si no se conoce $p_0$, elegir $0.5$ produce un tamaño conservador bajo muestreo aleatorio simple. Cuando $\sigma$ es desconocida, el cálculo con $t$ depende de $n$ y puede resolverse iterativamente usando una desviación piloto. Estas expresiones no incorporan corrección por población finita, diseño complejo ni pérdidas por no respuesta.
+
+```{r}
+# Planeación educativa: precisión de 3 puntos en una prueba,
+# sigma estimada previamente en 12 puntos, confianza del 95 %
+ceiling((qnorm(0.975)*12/3)^2)
+# Proporción con error de 5 puntos porcentuales
+ceiling(qnorm(0.975)^2*0.5*0.5/0.05^2)
+```
+
+
+
+```{r}
+#| label: configuracion-ejemplos
+#| include: false
+
+options(digits = 6)
+
+nivel <- 0.95
+alpha <- 1 - nivel
+z <- qnorm(1 - alpha/2)
+
+redondear <- function(x, d = 3) round(x, d)
+
+intervalo <- function(estimacion, margen) {
+  c(inferior = estimacion-margen,
+    superior = estimacion+margen)
+}
+
+# Mostrar resultados matemáticos en LaTeX
+paso <- function(expresion) {
+  cat("\n$$\n", expresion, "\n$$\n\n", sep = "")
+}
+
+# Formato numérico
+f <- function(x, d = 3) {
+  formatC(x, format = "f", digits = d)
+}
+
+# Colores de las gráficas
+morado <- "#AE45FF"
+lila <- "#C9A0FF"
+turquesa <- "#26A69A"
+rosa <- "#E63946"
+azul <- "#42A5F5"
+```
+
+# Ejemplos de intervalos de confianza en educación
+
+## Ejemplos de intervalos de confianza aplicados a la educación
+
+A continuación, se presentan ocho ejemplos prácticos de intervalos de confianza contextualizados en el ámbito educativo. Cada ejercicio se desarrolla con un nivel de confianza del 95 % e incluye el planteamiento de la situación, la fórmula estadística correspondiente, el procedimiento de cálculo, la interpretación de los resultados y su representación gráfica.
+
+**Para visualizar el desarrollo de cada ejercicio, haga clic sobre el ejemplo de su interés.**
+
+::: {.callout-note collapse="true" title="Ejemplo 1. Media con varianza poblacional conocida"}
+
+**Situación.** Un distrito educativo desea estimar el puntaje medio de comprensión lectora. Se selecciona una muestra aleatoria de 100 estudiantes. Se supone conocida una desviación estándar poblacional de 12 puntos.
+
+**Fórmula:**
+
+$$
+IC_{\mu}=\overline{x}\pm z_{1-\alpha/2}
+\frac{\sigma}{\sqrt{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-1
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(101)
+
+n <- 100
+sigma <- 12
+datos <- rnorm(n, 72, sigma)
+
+xbar <- mean(datos)
+margen <- z*sigma/sqrt(n)
+ic <- intervalo(xbar, margen)
+
+paso(sprintf(
+  "\\bar{x}=%.3f,\\quad \\sigma=%.0f,\\quad n=%d",
+  xbar, sigma, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\left(\\frac{%.0f}{\\sqrt{%d}}\\right)",
+  xbar, sigma, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  xbar, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+hist(datos,
+     breaks = 12,
+     col = lila,
+     border = "white",
+     main = "Puntajes de comprensión lectora",
+     xlab = "Puntaje",
+     ylab = "Frecuencia")
+
+abline(v = xbar, col = morado, lwd = 3)
+abline(v = ic, col = rosa, lwd = 2, lty = 2)
+
+legend("topright",
+       legend = c("Media muestral", "IC 95%"),
+       col = c(morado, rosa),
+       lty = c(1, 2),
+       lwd = c(3, 2),
+       bty = "n")
+```
+
+**Interpretación.** Con un nivel de confianza del 95 %, el intervalo calculado estima el promedio poblacional de comprensión lectora. Las líneas rojas representan los límites del intervalo y la línea morada indica la media muestral.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 2. Media con varianza poblacional desconocida"}
+
+**Situación.** Se desea estimar el tiempo medio semanal de estudio autónomo de estudiantes universitarios. Se seleccionan aleatoriamente 25 estudiantes y se supone una población aproximadamente normal.
+
+**Fórmula:**
+
+$$
+IC_{\mu}=\overline{x}\pm t_{1-\alpha/2,n-1}
+\frac{S}{\sqrt{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-2
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(202)
+
+n <- 25
+datos <- rnorm(n, 8.4, 2.5)
+
+xbar <- mean(datos)
+s <- sd(datos)
+gl <- n-1
+tcrit <- qt(1-alpha/2, gl)
+
+margen <- tcrit*s/sqrt(n)
+ic <- intervalo(xbar, margen)
+
+paso(sprintf(
+  "\\bar{x}=%.3f,\\quad S=%.3f,\\quad n=%d",
+  xbar, s, n
+))
+
+paso(sprintf(
+  "t_{0.975,%d}=%.3f",
+  gl, tcrit
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f\\left(\\frac{%.3f}{\\sqrt{%d}}\\right)",
+  xbar, tcrit, s, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  xbar, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+hist(datos,
+     breaks = 8,
+     col = "#80DEEA",
+     border = "white",
+     main = "Horas semanales de estudio autónomo",
+     xlab = "Horas de estudio",
+     ylab = "Frecuencia")
+
+abline(v = xbar, col = "#006064", lwd = 3)
+abline(v = ic, col = rosa, lwd = 2, lty = 2)
+
+legend("topright",
+       legend = c("Media", "IC 95%"),
+       col = c("#006064", rosa),
+       lwd = c(3, 2),
+       lty = c(1, 2),
+       bty = "n")
+```
+
+**Interpretación.** El intervalo estima, con un nivel de confianza del 95 %, el promedio poblacional de horas semanales dedicadas al estudio autónomo. Se utiliza la distribución t de Student porque la desviación estándar poblacional es desconocida.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 3. Proporción poblacional"}
+
+**Situación.** Una institución educativa desea estimar la proporción de estudiantes que utilizan semanalmente la biblioteca digital. Se encuesta aleatoriamente a 200 estudiantes.
+
+**Fórmula:**
+
+$$
+\widehat{p}=\frac{x}{n}
+$$
+
+$$
+IC_p=\widehat{p}\pm z_{1-\alpha/2}
+\sqrt{\frac{\widehat{p}(1-\widehat{p})}{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-3
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(303)
+
+n <- 200
+datos <- rbinom(n, 1, 0.75)
+
+exitos <- sum(datos)
+phat <- exitos/n
+
+margen <- z*sqrt(phat*(1-phat)/n)
+ic <- intervalo(phat, margen)
+
+paso(sprintf(
+  "\\widehat{p}=\\frac{%d}{%d}=%.3f",
+  exitos, n, phat
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\sqrt{\\frac{%.3f(1-%.3f)}{%d}}",
+  phat, phat, phat, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  phat, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.2f\\%%,\\ %.2f\\%%]}",
+  100*ic[1], 100*ic[2]
+))
+
+frecuencias <- c(exitos, n-exitos)
+
+bp <- barplot(frecuencias,
+              names.arg = c("Utilizan", "No utilizan"),
+              col = c(morado, "#FFB74D"),
+              border = NA,
+              ylim = c(0, n),
+              main = "Uso de la biblioteca digital",
+              ylab = "Número de estudiantes")
+
+text(bp, frecuencias+8,
+     labels = frecuencias,
+     font = 2)
+```
+
+**Interpretación.** El intervalo del 95 % estima la proporción poblacional de estudiantes que utilizan la biblioteca digital semanalmente. El gráfico muestra las frecuencias observadas en la muestra.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 4. Varianza poblacional"}
+
+**Situación.** Se desea estimar la variabilidad de los puntajes de matemáticas de una población estudiantil. Se seleccionan aleatoriamente 20 estudiantes y se supone normalidad poblacional.
+
+**Fórmula:**
+
+$$
+IC_{\sigma^2}=
+\left[
+\frac{(n-1)S^2}{\chi^2_{1-\alpha/2,n-1}},
+\frac{(n-1)S^2}{\chi^2_{\alpha/2,n-1}}
+\right]
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-4
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(404)
+
+n <- 20
+datos <- rnorm(n, 75, 8)
+
+s2 <- var(datos)
+gl <- n-1
+
+chi_inf <- qchisq(alpha/2, gl)
+chi_sup <- qchisq(1-alpha/2, gl)
+
+ic <- c(
+  inferior = gl*s2/chi_sup,
+  superior = gl*s2/chi_inf
+)
+
+paso(sprintf(
+  "S^2=%.3f,\\quad n=%d,\\quad gl=%d",
+  s2, n, gl
+))
+
+paso(sprintf(
+  "\\chi^2_{0.025,%d}=%.3f,\\quad \\chi^2_{0.975,%d}=%.3f",
+  gl, chi_inf, gl, chi_sup
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=\\left[\\frac{%d(%.3f)}{%.3f},\\ \\frac{%d(%.3f)}{%.3f}\\right]",
+  gl, s2, chi_sup, gl, s2, chi_inf
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+paso(sprintf(
+  "IC_{\\sigma,95\\%%}=[%.3f,\\ %.3f]",
+  sqrt(ic[1]), sqrt(ic[2])
+))
+
+x <- seq(0, qchisq(0.999, gl), length.out = 600)
+y <- dchisq(x, gl)
+
+plot(x, y, type = "l",
+     col = morado, lwd = 3,
+     main = "Distribución ji-cuadrado",
+     xlab = "Valor del estadístico",
+     ylab = "Densidad")
+
+zona <- x >= chi_inf & x <= chi_sup
+
+polygon(c(chi_inf, x[zona], chi_sup),
+        c(0, y[zona], 0),
+        col = adjustcolor(lila, alpha.f = 0.65),
+        border = NA)
+
+lines(x, y, col = morado, lwd = 3)
+
+abline(v = c(chi_inf, chi_sup),
+       col = rosa, lwd = 2, lty = 2)
+
+legend("topright",
+       legend = c("Densidad", "Valores críticos"),
+       col = c(morado, rosa),
+       lwd = c(3, 2),
+       lty = c(1, 2),
+       bty = "n")
+```
+
+**Interpretación.** El intervalo estima la varianza poblacional de los puntajes, expresada en puntos cuadrados. La raíz cuadrada de sus extremos proporciona un intervalo para la desviación estándar.
+
+La región sombreada representa el 95 % central de la distribución ji-cuadrado utilizada en el procedimiento.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 5. Diferencia de medias con varianzas conocidas"}
+
+**Situación.** Se comparan los puntajes de matemáticas de dos instituciones independientes. Se consideran conocidas las desviaciones estándar poblacionales: 10 puntos en A y 9 puntos en B.
+
+**Fórmula:**
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm z_{1-\alpha/2}
+\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-5
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(505)
+
+n1 <- 64
+n2 <- 81
+sigma1 <- 10
+sigma2 <- 9
+
+A <- rnorm(n1, 78, sigma1)
+B <- rnorm(n2, 74, sigma2)
+
+x1 <- mean(A)
+x2 <- mean(B)
+
+dif <- x1-x2
+margen <- z*sqrt(sigma1^2/n1+sigma2^2/n2)
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "\\bar{x}_1-\\bar{x}_2=%.3f-%.3f=%.3f",
+  x1, x2, dif
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\sqrt{\\frac{%d}{%d}+\\frac{%d}{%d}}",
+  dif, sigma1^2, n1, sigma2^2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+dA <- density(A)
+dB <- density(B)
+
+plot(dA,
+     col = morado, lwd = 3,
+     xlim = range(c(dA$x, dB$x)),
+     ylim = c(0, max(dA$y,dB$y)*1.2),
+     main = "Comparación de puntajes entre instituciones",
+     xlab = "Puntaje",
+     ylab = "Densidad")
+
+lines(dB, col = turquesa, lwd = 3)
+
+abline(v = x1, col = morado, lty = 2)
+abline(v = x2, col = turquesa, lty = 2)
+
+legend("topright",
+       legend = c("Institución A", "Institución B"),
+       col = c(morado, turquesa),
+       lwd = 3,
+       bty = "n")
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre las medias poblacionales de las dos instituciones. Si contiene cero, no se descarta una diferencia nula al nivel bilateral del 5 %. Si no lo contiene, existe evidencia estadística de una diferencia.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 6. Diferencia de medias con varianzas desconocidas e iguales"}
+
+**Situación.** Se comparan dos metodologías de enseñanza aplicadas a grupos independientes. Se supone que las varianzas poblacionales son iguales, aunque desconocidas.
+
+**Fórmulas:**
+
+$$
+S_p^2=
+\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}
+{n_1+n_2-2}
+$$
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,n_1+n_2-2}
+S_p\sqrt{\frac1{n_1}+\frac1{n_2}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-6
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(606)
+
+n1 <- 30
+n2 <- 28
+
+A <- rnorm(n1, 82, 8)
+B <- rnorm(n2, 77, 8)
+
+x1 <- mean(A)
+x2 <- mean(B)
+s1 <- sd(A)
+s2 <- sd(B)
+
+gl <- n1+n2-2
+
+sp2 <- ((n1-1)*s1^2+(n2-1)*s2^2)/gl
+sp <- sqrt(sp2)
+
+tcrit <- qt(1-alpha/2, gl)
+dif <- x1-x2
+
+margen <- tcrit*sp*sqrt(1/n1+1/n2)
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "S_p^2=\\frac{%d(%.3f)^2+%d(%.3f)^2}{%d}=%.3f",
+  n1-1, s1, n2-1, s2, gl, sp2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f(%.3f)\\sqrt{\\frac1{%d}+\\frac1{%d}}",
+  dif, tcrit, sp, n1, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+cortes <- pretty(range(c(A,B)), n = 10)
+
+hist(A,
+     breaks = cortes,
+     freq = FALSE,
+     col = adjustcolor(morado, alpha.f = 0.5),
+     border = "white",
+     main = "Puntajes por metodología",
+     xlab = "Puntaje",
+     ylab = "Densidad",
+     ylim = c(0, 0.10))
+
+hist(B,
+     breaks = cortes,
+     freq = FALSE,
+     col = adjustcolor(turquesa, alpha.f = 0.5),
+     border = "white",
+     add = TRUE)
+
+legend("topright",
+       legend = c("Metodología A", "Metodología B"),
+       fill = c(morado, turquesa),
+       bty = "n")
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre los promedios poblacionales de ambas metodologías. Se utiliza una varianza agrupada bajo el supuesto de igualdad de varianzas poblacionales.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 7. Diferencia de medias con varianzas distintas (Welch)"}
+
+**Situación.** Se compara el rendimiento en resolución de problemas de dos colegios independientes. Las varianzas poblacionales son desconocidas y no se supone que sean iguales.
+
+**Fórmulas:**
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,\nu}
+\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}
+$$
+
+$$
+\nu\approx
+\frac{(S_1^2/n_1+S_2^2/n_2)^2}
+{\dfrac{(S_1^2/n_1)^2}{n_1-1}
++\dfrac{(S_2^2/n_2)^2}{n_2-1}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-7
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(707)
+
+n1 <- 25
+n2 <- 35
+
+A <- rnorm(n1, 85, 12)
+B <- rnorm(n2, 79, 7)
+
+x1 <- mean(A)
+x2 <- mean(B)
+
+s1 <- sd(A)
+s2 <- sd(B)
+
+a <- s1^2/n1
+b <- s2^2/n2
+
+nu <- (a+b)^2/(a^2/(n1-1)+b^2/(n2-1))
+
+tcrit <- qt(1-alpha/2, nu)
+
+dif <- x1-x2
+margen <- tcrit*sqrt(a+b)
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "\\nu=\\frac{(%.3f+%.3f)^2}{\\frac{(%.3f)^2}{%d}+\\frac{(%.3f)^2}{%d}}=%.3f",
+  a, b, a, n1-1, b, n2-1, nu
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f\\sqrt{\\frac{(%.3f)^2}{%d}+\\frac{(%.3f)^2}{%d}}",
+  dif, tcrit, s1, n1, s2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+dA <- density(A)
+dB <- density(B)
+
+plot(dA,
+     col = "#E91E63",
+     lwd = 3,
+     xlim = range(c(dA$x,dB$x)),
+     ylim = c(0,max(dA$y,dB$y)*1.2),
+     main = "Rendimiento en resolución de problemas",
+     xlab = "Puntaje",
+     ylab = "Densidad")
+
+lines(dB, col = azul, lwd = 3)
+
+abline(v = x1, col = "#E91E63", lty = 2)
+abline(v = x2, col = azul, lty = 2)
+
+legend("topright",
+       legend = c("Colegio A", "Colegio B"),
+       col = c("#E91E63", azul),
+       lwd = 3,
+       bty = "n")
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia de medias poblacionales sin imponer igualdad de varianzas. La gráfica permite comparar visualmente la dispersión de los puntajes de ambos colegios.
+
+:::
+
+
+::: {.callout-note collapse="true" title="Ejemplo 8. Diferencia de proporciones"}
+
+**Situación.** Se comparan las proporciones de estudiantes que entregan puntualmente sus proyectos en dos colegios. Se seleccionan muestras independientes de 120 estudiantes del colegio A y 100 del colegio B.
+
+**Fórmula:**
+
+$$
+IC_{p_1-p_2}=
+(\widehat{p}_1-\widehat{p}_2)
+\pm z_{1-\alpha/2}
+\sqrt{
+\frac{\widehat{p}_1(1-\widehat{p}_1)}{n_1}
++
+\frac{\widehat{p}_2(1-\widehat{p}_2)}{n_2}
+}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-8
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(808)
+
+n1 <- 120
+n2 <- 100
+
+A <- rbinom(n1, 1, 0.70)
+B <- rbinom(n2, 1, 0.60)
+
+e1 <- sum(A)
+e2 <- sum(B)
+
+p1 <- e1/n1
+p2 <- e2/n2
+
+dif <- p1-p2
+
+se <- sqrt(p1*(1-p1)/n1+p2*(1-p2)/n2)
+margen <- z*se
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\widehat{p}_1=\\frac{%d}{%d}=%.3f",
+  e1, n1, p1
+))
+
+paso(sprintf(
+  "\\widehat{p}_2=\\frac{%d}{%d}=%.3f",
+  e2, n2, p2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=(%.3f-%.3f)\\pm1.960\\sqrt{\\frac{%.3f(1-%.3f)}{%d}+\\frac{%.3f(1-%.3f)}{%d}}",
+  p1, p2, p1, p1, n1, p2, p2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.2f\\%%,\\ %.2f\\%%]}",
+  100*ic[1], 100*ic[2]
+))
+
+porcentajes <- c(p1,p2)*100
+
+bp <- barplot(porcentajes,
+              names.arg = c("Colegio A", "Colegio B"),
+              col = c(morado, turquesa),
+              border = NA,
+              ylim = c(0,100),
+              main = "Entrega puntual de proyectos",
+              ylab = "Porcentaje de estudiantes")
+
+text(bp, porcentajes+5,
+     labels = paste0(round(porcentajes,1),"%"),
+     font = 2,
+     cex = 1.2)
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre las proporciones poblacionales de estudiantes que entregan puntualmente sus proyectos. Sus extremos se expresan en puntos porcentuales.
+
+Si el intervalo contiene cero, no se descarta la igualdad de proporciones poblacionales al nivel bilateral del 5 %.
+
+:::
+
+
+## Conclusiones
+
+La estimación puntual ofrece un valor representativo de un parámetro, mientras que los intervalos de confianza comunican la incertidumbre del muestreo. La elección correcta de la fórmula depende de **qué parámetro** se estima, de **cuántas poblaciones** se comparan, de la **independencia o apareamiento**, del conocimiento de las varianzas y de los **supuestos distribucionales**. En educación, estas herramientas permiten estudiar promedios, proporciones y variabilidad de resultados sin confundir diferencias estadísticas con efectos causales.
+
+
+```{=html}
+<style>
+/* Botón flotante para volver al inicio */
+#volver-inicio {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #AE45FF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 25px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+#volver-inicio:hover {
+  background-color: #8A2BE2;
+}
+</style>
+
+<button id="volver-inicio"
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        title="Volver al inicio"
+        aria-label="Volver al inicio">
+  &#8593;
+</button>
+```
