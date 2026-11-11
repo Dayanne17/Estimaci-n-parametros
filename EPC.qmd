@@ -89,7 +89,7 @@ $$\overline X=\frac{1}{n}\sum_{i=1}^n X_i.$$
 
 La estimación puntual es sencilla, pero no expresa directamente la incertidumbre muestral. Esa limitación motiva los intervalos de confianza.
 
-- Propiedades de los estimadores
+- PROPIEDADES DE LOS ESTIMADORES
 
 **A. Insesgadez.** Un estimador es insesgado si su esperanza coincide con el parámetro:
 
