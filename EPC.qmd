@@ -1,0 +1,2263 @@
+---
+title: "ESTIMACIÓN DE PARAMETROS E<br>INTERVALOS DE CONFIANZA"
+subtitle: "FUNDAMENTOS, PROCEDIMIENTOS Y APLICACIONES EN EDUCACIÓN"
+author: 
+  - name: Dayanne Tique Bustamante<br>Paula Andrea Saldaña Cuellar<br>Jorge Eliecer Riaño Duarte
+    affiliation: "Universidad del Tolima"
+    affiliation-url: "https://www.ut.edu.co/"
+date: today
+lang: es
+title-block-banner: "#AE45FF"
+
+format:
+  html:
+    embed-resources: true
+    page-layout: full
+    fontsize: 14pt
+    toc: true
+    toc-location: left
+    number-sections: true
+    code-fold: true
+    code-summary: "Ver código"
+    theme: dark
+    highlight-style: monokai
+    html-math-method: katex
+    smooth-scroll: true
+    link-external-newwindow: true
+    code-overflow: scroll
+    favicon: favicon.ico
+    
+editor: visual
+
+knitr:
+  opts_chunk:
+    message: false
+    warning: false
+    fig.align: center
+    fig.width: 6
+    fig.height: 6
+    out.width: "70%"
+---
+
+::: {style="position:absolute; top:20px; right:10px;"}
+<img src="logo_ut.png" width="150"/>
+:::
+
+::: {style="position:absolute; top:0px; left:10px;"}
+<img src="logo_lm.png" width="150"/>
+:::
+
+```{=html}
+<style>
+body{
+  background-color:#fcfced;
+  font-size:130%;
+  text-align:justify;
+}
+
+.quarto-title-banner {
+  padding-bottom: 15px !important;
+}
+</style>
+```
+
+```{r}
+#| label: configuracion
+#| echo: true
+options(digits = 6)
+nivel <- 0.95
+alpha <- 1 - nivel
+z <- qnorm(1 - alpha/2)
+redondear <- function(x, d = 3) round(x, d)
+intervalo <- function(estimacion, margen) c(inferior = estimacion-margen, superior = estimacion+margen)
+```
+
+# Fundamentos de estimación de parámetros
+
+## Estimación puntual
+
+- INTRODUCCIÓN
+
+En estadística inferencial se estudia una **población** mediante una **muestra aleatoria**. Se llama *parámetro* a una característica numérica desconocida de la población, como la media $\mu$, la proporción $p$ o la varianza $\sigma^2$. Un **estadístico** es una función de los datos muestrales. Cuando se usa para aproximar un parámetro recibe el nombre de **estimador** $\widehat\theta$; el número calculado con una muestra concreta es la **estimación**.
+
+$$\widehat\theta=T(X_1,X_2,\ldots,X_n).$$
+
+Por ejemplo, si se desea conocer la nota media de todos los estudiantes de una institución, la media de una muestra aleatoria es una estimación puntual de $\mu$:
+
+$$\overline X=\frac{1}{n}\sum_{i=1}^n X_i.$$
+
+La estimación puntual es sencilla, pero no expresa directamente la incertidumbre muestral. Esa limitación motiva los intervalos de confianza.
+
+- PROPIEDADES DE LOS ESTIMADORES
+
+**A. Insesgadez.** Un estimador es insesgado si su esperanza coincide con el parámetro:
+
+$$\operatorname E(\widehat\theta)=\theta.$$
+
+Para una muestra aleatoria con media $\mu$ y varianza finita $\sigma^2$, se cumple $\operatorname E(\overline X)=\mu$. Para la varianza conviene distinguir:
+
+$$s_n^2=\frac1n\sum_{i=1}^n(X_i-\overline X)^2,\qquad S^2=\frac1{n-1}\sum_{i=1}^n(X_i-\overline X)^2.$$
+
+El primero es sesgado, pues $\operatorname E(s_n^2)=\frac{n-1}{n}\sigma^2$; el segundo es insesgado, pues $\operatorname E(S^2)=\sigma^2$.
+
+**B. Consistencia.** Un estimador es consistente cuando se acerca al parámetro al crecer la muestra:
+
+$$\widehat\theta_n\xrightarrow{P}\theta,\qquad\text{equivalentemente}\quad
+\lim_{n\to\infty}P(|\widehat\theta_n-\theta|>\varepsilon)=0\quad(\varepsilon>0).$$
+
+Una condición **suficiente**, aunque no necesaria, es que $\operatorname E(\widehat\theta_n)\to\theta$ y $\operatorname{Var}(\widehat\theta_n)\to0$. En particular, $\operatorname{Var}(\overline X)=\sigma^2/n\to0$.
+
+**C. Eficiencia.** Entre estimadores insesgados de un mismo parámetro, y bajo condiciones comparables, se prefiere el de menor varianza. Para dos estimadores:
+
+$$\operatorname{Var}(\widehat\theta_1)<\operatorname{Var}(\widehat\theta_2)\ \Longrightarrow\ \widehat\theta_1\text{ es más eficiente}.$$
+
+**Importante:** un estimador con varianza menor puede tener más sesgo. Si los estimadores son sesgados, resulta útil comparar el error cuadrático medio $\operatorname{ECM}(\widehat\theta)=\operatorname{Var}(\widehat\theta)+\operatorname{Sesgo}(\widehat\theta)^2$.
+
+- MÉTODOS DE CÁLCULO ESTIMADORES
+
+**A. Método de los momentos.** Se igualan los momentos teóricos de una distribución a los momentos de la muestra y se despejan los parámetros. Si $X$ es Bernoulli$(p)$, $\operatorname E(X)=p$, por lo que:
+
+$$\widehat p_{\mathrm{MM}}=\overline X.$$
+
+**B. Máxima verosimilitud.** Se busca el valor del parámetro que hace más probables los datos observados. Si las observaciones son independientes:
+
+$$L(\theta)=\prod_{i=1}^n f(x_i;\theta),\qquad
+\ell(\theta)=\log L(\theta).$$
+
+Para un máximo interior diferenciable se busca una solución de $\ell'(\theta)=0$ y se comprueba que sea un máximo; también hay que considerar los límites del espacio paramétrico. Para una muestra Bernoulli:
+
+$$L(p)=p^{\sum x_i}(1-p)^{n-\sum x_i},$$ $$\ell'(p)=\frac{\sum x_i}{p}-\frac{n-\sum x_i}{1-p}=0
+\quad\Longrightarrow\quad \widehat p_{\mathrm{MV}}=\frac{\sum x_i}{n}.$$
+
+Los estimadores de máxima verosimilitud suelen ser consistentes, asintóticamente normales y eficientes **bajo condiciones de regularidad**. La propiedad de invariancia indica que si $\widehat\theta$ maximiza la verosimilitud, $g(\widehat\theta)$ estima por máxima verosimilitud $g(\theta)$, con las condiciones pertinentes.
+
+```{r}
+# Ejemplo: 18 de 30 estudiantes completan una actividad
+respuestas <- c(rep(1, 18), rep(0, 12))
+mean(respuestas) # momentos y máxima verosimilitud: p estimada = 0.60
+```
+
+## Estimación por intervalos de confianza
+
+Un intervalo de confianza (IC) es un procedimiento que produce dos límites a partir de los datos: $[L(X),U(X)]$. Su **nivel de confianza** $1-\alpha$ describe la cobertura del procedimiento en repeticiones del muestreo:
+
+$$P_\theta\big(L(X)\le\theta\le U(X)\big)=1-\alpha.$$
+
+Por ejemplo, el 95 % significa que, si se repite el muestreo muchas veces y se construye el IC del mismo modo, aproximadamente 95 de cada 100 intervalos contendrán el parámetro verdadero. **No** significa que, después de observar la muestra, el parámetro fijo tenga una probabilidad del 95 % de estar dentro de ese intervalo.
+
+Para intervalos simétricos se utiliza:
+
+$$IC=\text{estimación puntual}\ \pm\ \text{valor crítico}\times\text{error estándar}.$$
+
+El **margen de error** $E$ es la semiamplitud: $E=(U-L)/2$. Se emplean las distribuciones normal estándar $Z$, $t$ de Student, ji-cuadrado $\chi^2$ o $F$, según el parámetro y los supuestos. En este material $z_{1-\alpha/2}=\Phi^{-1}(1-\alpha/2)$ y $t_{1-\alpha/2,\nu}$ es el cuantil acumulado correspondiente.
+
+- CASOS PARTICULARES: Mapa de selección
+
+```{=html}
+<style>
+.tabla-estimacion {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px auto;
+  font-size: 16px;
+  text-align: center;
+}
+
+.tabla-estimacion th {
+  background-color: #AE45FF;
+  color: #000000;
+  padding: 14px;
+  border: 2px solid #444444;
+}
+
+.tabla-estimacion td {
+  padding: 12px;
+  border: 1px solid #666666;
+  color: #000000;
+}
+
+.tabla-estimacion tbody tr:nth-child(even) {
+  background-color: #eee1ff;
+}
+
+.tabla-estimacion tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.tabla-estimacion tbody tr:hover {
+  background-color: #d9b3ff;
+}
+</style>
+
+<table class="tabla-estimacion">
+  <thead>
+    <tr>
+      <th>Parámetro</th>
+      <th>Situación</th>
+      <th>Distribución</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td>Media μ</td>
+      <td>σ conocida</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Media μ</td>
+      <td>σ desconocida</td>
+      <td>t de Student</td>
+    </tr>
+
+    <tr>
+      <td>Proporción p</td>
+      <td>Aproximación de muestra grande</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Varianza σ²</td>
+      <td>Población normal</td>
+      <td>χ²</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas conocidas</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas desconocidas e iguales</td>
+      <td>t agrupada</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia μ₁ − μ₂</td>
+      <td>Varianzas desconocidas y distintas</td>
+      <td>t de Welch</td>
+    </tr>
+
+    <tr>
+      <td>Diferencia p₁ − p₂</td>
+      <td>Dos muestras independientes grandes</td>
+      <td>Normal Z</td>
+    </tr>
+
+    <tr>
+      <td>Media de diferencias pareadas</td>
+      <td>Mediciones antes/después</td>
+      <td>t pareada</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+- CONDICIONES Y PRECAUCIONES
+
+La selección aleatoria y la independencia son fundamentales. Para medias, la distribución normal de la población permite inferencia exacta con $t$ (si se desconoce la varianza); con muestras grandes puede utilizarse una aproximación por el teorema central del límite. Para proporciones, los intervalos de tipo Wald presentados en la hoja de fórmulas son aproximados y pueden funcionar mal en muestras pequeñas o proporciones extremas. Para varianzas, la normalidad de la población es especialmente importante. Para datos antes/después, deben analizarse las **diferencias dentro de cada estudiante**, no tratar las dos mediciones como grupos independientes.
+
+- PRECISIÓN Y TAMAÑO DE LA MUESTRA
+
+En general, aumentar el nivel de confianza ensancha el IC; aumentar $n$ disminuye el error estándar. Para estimar una media con desviación poblacional conocida y margen de error máximo $E$:
+
+$$E=z_{1-\alpha/2}\frac{\sigma}{\sqrt n},\qquad
+n=\left\lceil\left(\frac{z_{1-\alpha/2}\sigma}{E}\right)^2\right\rceil.$$
+
+Para una proporción, usando un valor de planificación $p_0$:
+
+$$n=\left\lceil\frac{z_{1-\alpha/2}^2p_0(1-p_0)}{E^2}\right\rceil.$$
+
+Si no se conoce $p_0$, elegir $0.5$ produce un tamaño conservador bajo muestreo aleatorio simple. Cuando $\sigma$ es desconocida, el cálculo con $t$ depende de $n$ y puede resolverse iterativamente usando una desviación piloto. Estas expresiones no incorporan corrección por población finita, diseño complejo ni pérdidas por no respuesta.
+
+```{r}
+# Planeación educativa: precisión de 3 puntos en una prueba,
+# sigma estimada previamente en 12 puntos, confianza del 95 %
+ceiling((qnorm(0.975)*12/3)^2)
+# Proporción con error de 5 puntos porcentuales
+ceiling(qnorm(0.975)^2*0.5*0.5/0.05^2)
+```
+
+```{r}
+#| label: configuracion-ejemplos
+#| include: false
+
+options(digits = 6)
+
+nivel <- 0.95
+alpha <- 1 - nivel
+z <- qnorm(1 - alpha/2)
+
+redondear <- function(x, d = 3) round(x, d)
+
+intervalo <- function(estimacion, margen) {
+  c(inferior = estimacion-margen,
+    superior = estimacion+margen)
+}
+
+# Mostrar resultados matemáticos en LaTeX
+paso <- function(expresion) {
+  cat("\n$$\n", expresion, "\n$$\n\n", sep = "")
+}
+
+# Formato numérico
+f <- function(x, d = 3) {
+  formatC(x, format = "f", digits = d)
+}
+
+# Colores de las gráficas
+morado <- "#AE45FF"
+lila <- "#C9A0FF"
+turquesa <- "#26A69A"
+rosa <- "#E63946"
+azul <- "#42A5F5"
+```
+
+# Ejemplos de intervalos de confianza en educación
+
+## Ejemplos de intervalos de confianza aplicados a la educación
+
+A continuación, se presentan ocho ejemplos prácticos de intervalos de confianza contextualizados en el ámbito educativo. Cada ejercicio se desarrolla con un nivel de confianza del 95 % e incluye el planteamiento de la situación, la fórmula estadística correspondiente, el procedimiento de cálculo, la interpretación de los resultados y su representación gráfica.
+
+**Para visualizar el desarrollo de cada ejercicio, haga clic sobre el ejemplo de su interés.**
+
+::: {.callout-note collapse="true" title="Ejemplo 1. Media con varianza poblacional conocida"}
+**Situación.** Un distrito educativo desea estimar el puntaje medio de comprensión lectora. Se selecciona una muestra aleatoria de 100 estudiantes. Se supone conocida una desviación estándar poblacional de 12 puntos.
+
+**Fórmula:**
+
+$$
+IC_{\mu}=\overline{x}\pm z_{1-\alpha/2}
+\frac{\sigma}{\sqrt{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-1
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(101)
+
+n <- 100
+sigma <- 12
+datos <- rnorm(n, 72, sigma)
+
+xbar <- mean(datos)
+margen <- z*sigma/sqrt(n)
+ic <- intervalo(xbar, margen)
+
+paso(sprintf(
+  "\\bar{x}=%.3f,\\quad \\sigma=%.0f,\\quad n=%d",
+  xbar, sigma, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\left(\\frac{%.0f}{\\sqrt{%d}}\\right)",
+  xbar, sigma, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  xbar, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+)) 
+```
+
+**Gráfica**
+
+```{r}
+#| label: grafica-campana-con-lineas
+#| echo: true
+#| warning: false
+
+library(ggplot2)
+
+# Parámetros del problema
+media_muestral <- 71.554
+sigma <- 12
+n <- 100
+error_estandar <- sigma / sqrt(n)
+nivel <- 0.95
+alpha <- 1 - nivel
+z_critico <- qnorm(1 - alpha/2) # 1.96
+
+# Límites reales del intervalo de confianza
+lim_inf <- media_muestral - z_critico * error_estandar # 69.202
+lim_sup <- media_muestral + z_critico * error_estandar # 73.906
+
+# Definición de colores
+morado <- "#0F0126"
+lila <- "#C9A0FF"
+
+# Crear datos para la curva normal estándar N(0,1)
+x <- seq(-3.5, 3.5, length.out = 1000)
+y <- dnorm(x)
+df_curva <- data.frame(x = x, y = y)
+
+# Regiones para el sombreado
+df_cola_izq <- data.frame(
+  x = c(-3.5, seq(-3.5, -z_critico, length.out = 100), -z_critico),
+  y = c(0, dnorm(seq(-3.5, -z_critico, length.out = 100)), 0)
+)
+
+df_centro <- data.frame(
+  x = c(-z_critico, seq(-z_critico, z_critico, length.out = 200), z_critico),
+  y = c(0, dnorm(seq(-z_critico, z_critico, length.out = 200)), 0)
+)
+
+df_cola_der <- data.frame(
+  x = c(z_critico, seq(z_critico, 3.5, length.out = 100), 3.5),
+  y = c(0, dnorm(seq(z_critico, 3.5, length.out = 100)), 0)
+)
+
+# Construcción de la gráfica con ggplot2
+grafica_contexto <- ggplot(df_curva, aes(x = x, y = y)) +
+  # Sombreado de colas en morado
+  geom_polygon(data = df_cola_izq, fill = alpha(morado, 0.4)) +
+  geom_polygon(data = df_cola_der, fill = alpha(morado, 0.4)) +
+  
+  # Sombreado central en lila (nivel de confianza)
+  geom_polygon(data = df_centro, fill = alpha(lila, 0.6)) +
+  
+  # Línea principal de la campana
+  geom_line(color = morado, size = 1.2) +
+  
+  # LÍNEAS VERTICALES DIVISORIAS (IMAGINARIAS/PUNTEADAS)
+  geom_segment(aes(x = -z_critico, y = 0, xend = -z_critico, yend = dnorm(-z_critico)), 
+               color = morado, linetype = "dashed", size = 0.8) +
+  geom_segment(aes(x = z_critico, y = 0, xend = z_critico, yend = dnorm(z_critico)), 
+               color = morado, linetype = "dashed", size = 0.8) +
+  
+  # Anotaciones de las áreas y datos
+  annotate("text", x = 0, y = dnorm(0) / 2, label = paste0("1 - α = ", nivel), 
+           color = "#4A154B", size = 5, fontface = "bold") +
+  annotate("text", x = -2.7, y = 0.05, label = expression(alpha/2), color = morado, size = 4.5) +
+  annotate("text", x = 2.7, y = 0.05, label = expression(alpha/2), color = morado, size = 4.5) +
+  
+  # Anotación de la distribución
+  annotate("text", x = 2.2, y = dnorm(0) * 0.9, label = "N(0, 1)", color = morado, size = 5, fontface = "bold") +
+  
+  # Valores en el eje X mostrando tanto Z como los puntajes reales de comprensión lectora
+  annotate("text", x = -z_critico, y = -0.03, 
+           label = paste0("-1.96\n(LI: ", round(lim_inf, 3), ")"), 
+           color = morado, size = 3.5, hjust = 0.5) +
+  annotate("text", x = z_critico, y = -0.03, 
+           label = paste0("1.96\n(LS: ", round(lim_sup, 3), ")"), 
+           color = morado, size = 3.5, hjust = 0.5) +
+  
+  # Configuración visual
+  scale_x_continuous(breaks = NULL, limits = c(-3.5, 3.5)) +
+  scale_y_continuous(breaks = NULL, limits = c(-0.06, dnorm(0) * 1.1)) +
+  theme_minimal() +
+  labs(x = NULL, y = NULL, 
+       title = "Distribución del Puntaje Medio de Comprensión Lectora",
+       subtitle = paste0("IC 95%: [", round(lim_inf, 3), ", ", round(lim_sup, 3), "]")) +
+  theme(
+    plot.title = element_text(face = "bold", color = "#4A154B", hjust = 0.5, size = 13),
+    plot.subtitle = element_text(color = morado, hjust = 0.5, size = 11),
+    panel.grid = element_blank(),
+    axis.line.x = element_line(color = morado, size = 0.8)
+  )
+
+print(grafica_contexto)
+```
+
+**Interpretación.** Con un nivel de confianza del 95 %, el intervalo calculado estima el promedio poblacional de comprensión lectora. Las líneas rojas representan los límites del intervalo y la línea morada indica la media muestral.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-vertical
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(123)
+
+# Parámetros del ejercicio
+mu_poblacional <- 71.554
+sigma <- 12
+n <- 100
+z_critico <- qnorm(0.975) 
+error_estandar <- sigma / sqrt(n)
+margen_error <- z_critico * error_estandar
+num_simulaciones <- 100
+
+# Simulación de las 100 muestras y cálculo de intervalos
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  media_muestral = replicate(num_simulaciones, mean(rnorm(n, mean = mu_poblacional, sd = sigma)))
+) %>%
+  mutate(
+    lim_inf = media_muestral - margen_error,
+    lim_sup = media_muestral + margen_error,
+    contiene_mu = ifelse(lim_inf <= mu_poblacional & lim_sup >= mu_poblacional, 
+                         "Sí contiene a μ (95% esperado)", 
+                         "No contiene a μ (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= mu_poblacional & datos_ic$lim_sup >= mu_poblacional)
+
+# Creación del gráfico con orientación vertical
+ggplot(datos_ic, aes(x = muestra, y = media_muestral, color = contiene_mu)) +
+  # Línea horizontal de referencia para la media poblacional real
+  geom_hline(yintercept = mu_poblacional, linetype = "dashed", color = "#2C3E50", linewidth = 0.9) +
+  # Barras verticales de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.6, alpha = 0.85) +
+  # Puntos centrales (medias muestrales)
+  geom_point(size = 1.5) +
+  # Paleta de colores distintiva
+  scale_color_manual(
+    values = c(
+      "Sí contiene a μ (95% esperado)" = "#00B4D8", 
+      "No contiene a μ (5% esperado)" = "#F72585"
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza al 95% (Verticales)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos lograron capturar la media poblacional (μ = 71.554)"),
+    x = "Número de Muestra Simulada",
+    y = "Puntaje de Comprensión Lectora (IC 95%)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n = 100, σ = 12 y Z = 1.96"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#1D3557"),
+    plot.subtitle = element_text(size = 11, color = "#457B9D", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#1D3557")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos contengan el verdadero puntaje medio de comprensión lectora de todos los estudiantes del distrito educativo ($\mu = 71.554$ puntos) y 5 no lo contengan.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 2. Media con varianza poblacional desconocida"}
+**Situación.** Se desea estimar el tiempo medio semanal de estudio autónomo de estudiantes universitarios. Se seleccionan aleatoriamente 25 estudiantes y se supone una población aproximadamente normal.
+
+**Fórmula:**
+
+$$
+IC_{\mu}=\overline{x}\pm t_{1-\alpha/2,n-1}
+\frac{S}{\sqrt{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-2
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(202)
+
+n <- 25
+datos <- rnorm(n, 8.4, 2.5)
+
+xbar <- mean(datos)
+s <- sd(datos)
+gl <- n-1
+tcrit <- qt(1-alpha/2, gl)
+
+margen <- tcrit*s/sqrt(n)
+ic <- intervalo(xbar, margen)
+
+paso(sprintf(
+  "\\bar{x}=%.3f,\\quad S=%.3f,\\quad n=%d",
+  xbar, s, n
+))
+
+paso(sprintf(
+  "t_{0.975,%d}=%.3f",
+  gl, tcrit
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f\\left(\\frac{%.3f}{\\sqrt{%d}}\\right)",
+  xbar, tcrit, s, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  xbar, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+```
+
+**Gráfica**
+
+```{r}
+library(ggplot2)
+
+# 1. Datos del ejercicio
+x_barra <- 8.636
+s <- 2.464
+n <- 25
+gl <- n - 1                 # Grados de libertad (24)
+se <- s / sqrt(n)           # Error estándar (0.4928)
+li <- 7.619                 # Límite inferior
+ls <- 9.653                 # Límite superior
+
+# 2. Generar la secuencia de puntos para la distribución t escalada
+x_vals <- seq(x_barra - 4 * se, x_barra + 4 * se, length.out = 1000)
+y_vals <- dt((x_vals - x_barra) / se, df = gl) / se
+df_curva <- data.frame(x = x_vals, y = y_vals)
+
+# 3. Subconjuntos para sombrear las diferentes zonas
+df_sombra_centro <- subset(df_curva, x >= li & x <= ls)
+df_sombra_cola_izq <- subset(df_curva, x <= li)
+df_sombra_cola_der <- subset(df_curva, x >= ls)
+
+# 4. Construcción del gráfico en ggplot2 con colas en azul claro
+ggplot(df_curva, aes(x = x, y = y)) +
+  # Área central (95% en tono original)
+  geom_area(data = df_sombra_centro, fill = "#00DEDE", alpha = 0.9) +
+  
+  # Áreas de las colas (0.025 en azul bien claro)
+  geom_area(data = df_sombra_cola_izq, fill = "#00F2F2", alpha = 0.9) +
+  geom_area(data = df_sombra_cola_der, fill = "#00F2F2", alpha = 0.9) +
+  
+  # Línea de la curva de densidad
+  geom_line(color = "#04B5B5", size = 1.2) +
+  
+  # Líneas verticales punteadas en los límites
+  geom_vline(xintercept = c(li, ls), linetype = "dashed", color = "gray60", size = 0.7) +
+  
+  # Etiquetas de texto dentro y fuera de la curva
+  annotate("text", x = x_barra, y = max(y_vals) * 0.42, label = "0.95", 
+           size = 6, fontface = "bold", color = "black") +
+  annotate("text", x = li - 0.35, y = max(y_vals) * 0.05, label = "0.025", 
+           size = 4.2, color = "black") +
+  annotate("text", x = ls + 0.35, y = max(y_vals) * 0.05, label = "0.025", 
+           size = 4.2, color = "black") +
+  annotate("text", x = x_barra + 2.6 * se, y = max(y_vals) * 0.85, 
+           label = "t-Student (df=24)", size = 4.5, fontface = "bold.italic") +
+  
+  # Etiquetas inferiores (Li, Media y Ls)
+  annotate("text", x = li, y = -max(y_vals) * 0.08, label = paste0("Li = ", li), 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = x_barra, y = -max(y_vals) * 0.08, label = paste0("x̄ = ", x_barra), 
+           size = 4.5, fontface = "bold") +
+  annotate("text", x = ls, y = -max(y_vals) * 0.08, label = paste0("Ls = ", ls), 
+           size = 4.5, fontface = "bold") +
+  
+  # Ajustes de escala, título y limpieza visual del lienzo
+  coord_cartesian(ylim = c(-max(y_vals) * 0.12, max(y_vals) * 1.15), clip = "off") +
+  labs(
+    title = "Estimación del tiempo medio semanal de estudio autónomo (IC 95%)"
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.title = element_text(size = 11, face = "bold", color = "#333333", hjust = 0, margin = margin(b = 15)),
+    plot.margin = margin(20, 20, 30, 20)
+  )
+```
+
+**Interpretación.** El intervalo estima, con un nivel de confianza del 95 %, el promedio poblacional de horas semanales dedicadas al estudio autónomo. Se utiliza la distribución t de Student porque la desviación estándar poblacional es desconocida.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-t-student-
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(456)
+
+# Parámetros del ejercicio (Varianza desconocida -> t de Student)
+media_ref <- 8.636
+s_muestral <- 2.464
+n <- 25
+gl <- n - 1
+t_critico <- qt(0.975, df = gl) 
+num_simulaciones <- 100
+
+# Simulación de las 100 muestras
+set.seed(123)
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  media_muestral_sim = replicate(num_simulaciones, mean(rnorm(n, mean = media_ref, sd = s_muestral))),
+  s_sim = replicate(num_simulaciones, sd(rnorm(n, mean = media_ref, sd = s_muestral)))
+) %>%
+  mutate(
+    error_estandar = s_sim / sqrt(n),
+    margen_error = t_critico * error_estandar,
+    lim_inf = media_muestral_sim - margen_error,
+    lim_sup = media_muestral_sim + margen_error,
+    contiene_mu = ifelse(lim_inf <= media_ref & lim_sup >= media_ref, 
+                         "Sí contiene a μ (95% esperado)", 
+                         "No contiene a μ (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= media_ref & datos_ic$lim_sup >= media_ref)
+
+# Creación del gráfico con orientación vertical (muestras en X, intervalos verticales en Y)
+ggplot(datos_ic, aes(x = muestra, y = media_muestral_sim, color = contiene_mu)) +
+  # Línea horizontal de referencia para la media real de la simulación
+  geom_hline(yintercept = media_ref, linetype = "dashed", color = "#2C3E50", linewidth = 0.9) +
+  # Barras verticales de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.6, alpha = 0.85) +
+  # Puntos centrales (medias muestrales)
+  geom_point(size = 1.5) +
+  # Paleta de colores llamativos
+  scale_color_manual(
+    values = c(
+      "Sí contiene a μ (95% esperado)" = "#450FB8", 
+      "No contiene a μ (5% esperado)" = "#F229EF"
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza (t de Student, Vertical)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos lograron capturar el parámetro poblacional (μ ≈ 8.636)"),
+    x = "Número de Muestra Simulada",
+    y = "Tiempo de Estudio Autónomo (Horas)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n = 25, S = 2.464 y distribución t con 24 gl"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#1D3557"),
+    plot.subtitle = element_text(size = 11, color = "#457B9D", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#1D3557")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener el verdadero tiempo medio de estudio autónomo de los estudiantes universitarios ($\mu \approx 8.636$ horas) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 3. Proporción poblacional"}
+**Situación.** Una institución educativa desea estimar la proporción de estudiantes que utilizan semanalmente la biblioteca digital. Se encuesta aleatoriamente a 200 estudiantes.
+
+**Fórmula:**
+
+$$
+\widehat{p}=\frac{x}{n}
+$$
+
+$$
+IC_p=\widehat{p}\pm z_{1-\alpha/2}
+\sqrt{\frac{\widehat{p}(1-\widehat{p})}{n}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-3
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(303)
+
+n <- 200
+datos <- rbinom(n, 1, 0.75)
+
+exitos <- sum(datos)
+phat <- exitos/n
+
+margen <- z*sqrt(phat*(1-phat)/n)
+ic <- intervalo(phat, margen)
+
+paso(sprintf(
+  "\\widehat{p}=\\frac{%d}{%d}=%.3f",
+  exitos, n, phat
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\sqrt{\\frac{%.3f(1-%.3f)}{%d}}",
+  phat, phat, phat, n
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  phat, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.2f\\%%,\\ %.2f\\%%]}",
+  100*ic[1], 100*ic[2]
+))
+
+```
+
+**Gráfica**
+
+```{r}
+library(ggplot2)
+
+# 1. Datos del ejercicio de proporción
+p_hat <- 0.735
+n <- 200
+se_p <- sqrt((p_hat * (1 - p_hat)) / n)
+z_crit <- 1.96
+li_p <- 0.6738
+ls_p <- 0.7962
+
+# 2. Generar la curva de distribución normal estándar Z
+x_vals <- seq(-4, 4, length.out = 1000)
+y_vals <- dnorm(x_vals, mean = 0, sd = 1)
+df_curva <- data.frame(x = x_vals, y = y_vals)
+
+# 3. Subconjunto para sombrear el área central del 95% (-1.96 a 1.96)
+df_sombra <- subset(df_curva, x >= -z_crit & x <= z_crit)
+
+# 4. Construcción del gráfico en ggplot2
+ggplot(df_curva, aes(x = x, y = y)) +
+  # Título principal pequeño y elegante
+  annotate("text", x = 0, y = max(y_vals) * 1.22, 
+           label = "Estimación de la Proporción de Uso de la Biblioteca Digital (IC 95%)", 
+           size = 4, fontface = "bold", color = "black", hjust = 0.5) +
+  
+  # Área sombreada central (95%)
+  geom_area(data = df_sombra, fill = "#FFB74D", alpha = 0.9) +
+  
+  # Línea de la curva de densidad
+  geom_line(color = "#804B00", size = 1.2) +
+  
+  # Líneas verticales punteadas en los límites críticos Z
+  geom_vline(xintercept = c(-z_crit, z_crit), linetype = "dashed", color = "gray60", size = 0.7) +
+  
+  # Etiquetas de texto dentro y fuera de la curva
+  annotate("text", x = 0, y = max(y_vals) * 0.42, label = "0.95", 
+           size = 6, fontface = "bold", color = "black") +
+  annotate("text", x = -z_crit - 0.4, y = max(y_vals) * 0.05, label = "0.025", 
+           size = 4.2, color = "black") +
+  annotate("text", x = z_crit + 0.4, y = max(y_vals) * 0.05, label = "0.025", 
+           size = 4.2, color = "black") +
+  annotate("text", x = 2.6, y = max(y_vals) * 0.85, 
+           label = "N(0, 1)", size = 4.5, fontface = "bold.italic") +
+  
+  # Etiquetas inferiores adaptadas a los valores reales del intervalo
+  annotate("text", x = -z_crit, y = -max(y_vals) * 0.08, label = paste0("Li = ", li_p, "\n(67.38%)"), 
+           size = 4, fontface = "bold") +
+  annotate("text", x = 0, y = -max(y_vals) * 0.08, label = paste0("p̂ = ", p_hat, "\n(73.5%)"), 
+           size = 4, fontface = "bold") +
+  annotate("text", x = z_crit, y = -max(y_vals) * 0.08, label = paste0("Ls = ", ls_p, "\n(79.62%)"), 
+           size = 4, fontface = "bold") +
+  
+  # Ajustes de escala y limpieza visual del lienzo
+  coord_cartesian(ylim = c(-max(y_vals) * 0.15, max(y_vals) * 1.35), clip = "off") +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.margin = margin(20, 20, 30, 20)
+  )
+```
+
+**Interpretación.** El intervalo del 95 % estima la proporción poblacional de estudiantes que utilizan la biblioteca digital semanalmente. El gráfico muestra las frecuencias observadas en la muestra.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-proporcion-vertical
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(789)
+
+# Parámetros del ejercicio de proporción
+p_ref <- 0.735
+n <- 200
+z_critico <- qnorm(0.975) # 1.959964 (~1.96)
+num_simulaciones <- 100
+
+# Simulación de las 100 muestras binomiales / proporciones
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  x_sim = rbinom(num_simulaciones, size = n, prob = p_ref),
+  p_hat_sim = x_sim / n
+) %>%
+  mutate(
+    error_estandar = sqrt((p_hat_sim * (1 - p_hat_sim)) / n),
+    margen_error = z_critico * error_estandar,
+    lim_inf = p_hat_sim - margen_error,
+    lim_sup = p_hat_sim + margen_error,
+    contiene_p = ifelse(lim_inf <= p_ref & lim_sup >= p_ref, 
+                        "Sí contiene a p (95% esperado)", 
+                        "No contiene a p (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= p_ref & datos_ic$lim_sup >= p_ref)
+
+# Creación del gráfico vertical (muestras en X, intervalos verticales en Y)
+ggplot(datos_ic, aes(x = muestra, y = p_hat_sim, color = contiene_p)) +
+  # Línea horizontal de referencia para la proporción real
+  geom_hline(yintercept = p_ref, linetype = "dashed", color = "#2C3E50", linewidth = 0.9) +
+  # Barras verticales de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.6, alpha = 0.85) +
+  # Puntos centrales (proporciones muestrales)
+  geom_point(size = 1.5) +
+  # Paleta de colores llamativos
+  scale_color_manual(
+    values = c(
+      "Sí contiene a p (95% esperado)" = "#F29500", 
+      "No contiene a p (5% esperado)" = "#F2DE00"
+    )
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza (Proporción, Vertical)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos lograron capturar la proporción real (p = 0.735)"),
+    x = "Número de Muestra Simulada",
+    y = "Proporción Estimada de Uso de la Biblioteca Digital",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n = 200 y p = 0.735"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "black"),
+    plot.subtitle = element_text(size = 11, color = "#98A5A6", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#1D3557")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, 95 de esos intervalos van a contener la verdadera media semanal de estudio autónomo de los estudiantes universitarios (entre 7.619 y 9.653 horas) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 4. Varianza poblacional"}
+**Situación.** Se desea estimar la variabilidad de los puntajes de matemáticas de una población estudiantil. Se seleccionan aleatoriamente 20 estudiantes y se supone normalidad poblacional.
+
+**Fórmula:**
+
+$$
+IC_{\sigma^2}=
+\left[
+\frac{(n-1)S^2}{\chi^2_{1-\alpha/2,n-1}},
+\frac{(n-1)S^2}{\chi^2_{\alpha/2,n-1}}
+\right]
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-4
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(404)
+
+n <- 20
+datos <- rnorm(n, 75, 8)
+
+s2 <- var(datos)
+gl <- n-1
+
+chi_inf <- qchisq(alpha/2, gl)
+chi_sup <- qchisq(1-alpha/2, gl)
+
+ic <- c(
+  inferior = gl*s2/chi_sup,
+  superior = gl*s2/chi_inf
+)
+
+paso(sprintf(
+  "S^2=%.3f,\\quad n=%d,\\quad gl=%d",
+  s2, n, gl
+))
+
+paso(sprintf(
+  "\\chi^2_{0.025,%d}=%.3f,\\quad \\chi^2_{0.975,%d}=%.3f",
+  gl, chi_inf, gl, chi_sup
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=\\left[\\frac{%d(%.3f)}{%.3f},\\ \\frac{%d(%.3f)}{%.3f}\\right]",
+  gl, s2, chi_sup, gl, s2, chi_inf
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+paso(sprintf(
+  "IC_{\\sigma,95\\%%}=[%.3f,\\ %.3f]",
+  sqrt(ic[1]), sqrt(ic[2])
+))
+
+```
+
+**Gráfica**
+
+```{r}
+color_linea   <- "#2C3E50" # Color para la curva de densidad y ejes (ej. Azul oscuro / Pizarra)
+color_relleno <- "#AED6F1" # Color pastel para el área sombreada central (ej. Azul cielo)
+color_lineas_v <- "gray75" # Color para las líneas verticales punteadas
+# =====================================================================
+
+# Asegúrate de tener definidas tus variables del ejercicio antes de correr esto:
+# gl <- ...
+# chi_inf <- ...
+# chi_sup <- ...
+
+# 1. Rango y densidad
+x_max <- max(qchisq(0.999, gl), chi_sup * 1.15)
+x <- seq(0, x_max, length.out = 600)
+y <- dchisq(x, gl)
+y_max <- max(y) * 1.18
+
+# 2. Lienzo en blanco con espacio arriba para el título pequeño
+par(mar = c(3, 1.5, 2.5, 1.5))
+plot(x, y, type = "n",
+     xlim = c(-x_max * 0.04, x_max * 1.05),
+     ylim = c(-y_max * 0.22, y_max),
+     axes = FALSE, xlab = "", ylab = "")
+
+# Título principal pequeño en la parte superior
+title(main = "Distribución ji-cuadrado", cex.main = 0.95, font.main = 2, line = 0.8)
+
+# 3. Sombreado del área central (1 - alpha)
+zona <- x >= chi_inf & x <= chi_sup
+polygon(c(chi_inf, x[zona], chi_sup),
+        c(0, y[zona], 0),
+        col = adjustcolor(color_relleno, alpha.f = 0.75),
+        border = NA)
+
+# 4. Curva de densidad encima del sombreado
+lines(x, y, col = color_linea, lwd = 2.5)
+
+# 5. Ejes con flechas
+arrows(0, 0, x_max * 1.02, 0, length = 0.07, col = "gray55", lwd = 1) # Eje X
+arrows(0, 0, 0, y_max * 0.95, length = 0.07, col = "gray55", lwd = 1) # Eje Y
+
+# 6. Líneas verticales sutiles (más delgadas, punteadas y en gris claro)
+segments(x0 = c(chi_inf, chi_sup), y0 = -y_max * 0.14,
+         x1 = c(chi_inf, chi_sup), y1 = y_max * 0.92,
+         col = color_lineas_v, lwd = 0.8, lty = 2)
+
+# 7. Etiquetas de límites inferiores y superiores (Li y Ls)
+text(x = chi_inf, y = -y_max * 0.08,
+     labels = paste0("Li = ", round(chi_inf, 3)),
+     pos = 1, font = 2, cex = 0.85)
+
+text(x = chi_sup, y = -y_max * 0.08,
+     labels = paste0("Ls = ", round(chi_sup, 3)),
+     pos = 1, font = 2, cex = 0.85)
+
+# 8. Textos interiores centrados en el área sombreada (centroide visual del polígono)
+confianza <- round(pchisq(chi_sup, gl) - pchisq(chi_inf, gl), 2)
+cola <- round((1 - confianza) / 2, 3)
+
+x_centro <- sum(x[zona] * y[zona]) / sum(y[zona])
+y_centro <- mean(y[zona]) * 0.52
+
+text(x = x_centro, y = y_centro + y_max * 0.04,
+     labels = confianza, font = 2, cex = 1.2)
+
+text(x = x_centro, y = y_centro - y_max * 0.06,
+     labels = expression(1 - alpha), cex = 1)
+
+# 9. Valores de probabilidad en ambas colas (alfa/2)
+text(x = chi_inf / 2, y = y_max * 0.06,
+     labels = cola, cex = 0.8)  
+
+text(x = chi_sup + (x_max - chi_sup) * 0.35, y = y_max * 0.06,
+     labels = cola, cex = 0.8)
+
+# 10. Etiqueta flotante de la distribución a la derecha
+text(x = x_max * 0.74, y = y_max * 0.82,
+     labels = expression(chi^2), cex = 1.3, font = 2)
+
+text(x = x_max * 0.74, y = y_max * 0.70,
+     labels = paste0("Chi-cuadrado (df=", gl, ")"),
+     font = 3, cex = 0.9)
+     
+```
+
+**Interpretación.** El intervalo estima la varianza poblacional de los puntajes, expresada en puntos cuadrados. La raíz cuadrada de sus extremos proporciona un intervalo para la desviación estándar.
+
+La región sombreada representa el 95 % central de la distribución ji-cuadrado utilizada en el procedimiento.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-varianza
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(2026)
+
+# Parámetros del ejercicio (ajusta var_ref y n según los datos exactos de tu guía)
+var_ref <- 16      # Varianza poblacional de referencia (σ²)
+n <- 25            # Tamaño de la muestra
+gl <- n - 1        # Grados de libertad (24)
+num_simulaciones <- 100
+
+# Valores críticos de Chi-cuadrado al 95% de confianza
+chi_sup <- qchisq(0.975, df = gl) # Denominador para el límite inferior
+chi_inf <- qchisq(0.025, df = gl) # Denominador para el límite superior
+
+# Simulación de las 100 muestras y cálculo de varianzas muestrales (S²)
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  s2_sim = replicate(num_simulaciones, var(rnorm(n, mean = 50, sd = sqrt(var_ref))))
+) %>%
+  mutate(
+    lim_inf = (gl * s2_sim) / chi_sup,
+    lim_sup = (gl * s2_sim) / chi_inf,
+    contiene_var = ifelse(lim_inf <= var_ref & lim_sup >= var_ref, 
+                          "Sí contiene a σ² (95% esperado)", 
+                          "No contiene a σ² (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= var_ref & datos_ic$lim_sup >= var_ref)
+
+# Creación del gráfico con nueva paleta de colores (Verde Aguamarina vs Naranja Coral)
+ggplot(datos_ic, aes(x = muestra, y = s2_sim, color = contiene_var)) +
+  # Línea horizontal de referencia para la varianza poblacional real
+  geom_hline(yintercept = var_ref, linetype = "dashed", color = "#2B2D42", linewidth = 0.9) +
+  # Barras de los intervalos de confianza (asimétricas por la distribución Chi-cuadrado)
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.65, alpha = 0.85) +
+  # Puntos centrales (varianzas muestrales S²)
+  geom_point(size = 1.6) +
+  # Nueva paleta de colores
+  scale_color_manual(
+    values = c(
+      "Sí contiene a σ² (95% esperado)" = "#2A9D8F", # Verde esmeralda / aguamarina
+      "No contiene a σ² (5% esperado)" = "#E76F51"  # Naranja coral intenso
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza para la Varianza (95%)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos lograron capturar la varianza poblacional real (σ² = ", var_ref, ")"),
+    x = "Número de Muestra Simulada",
+    y = "Varianza Estimada (IC 95%)",
+    color = "Estado del Intervalo:",
+    caption = paste0("Fuente: Simulación basada en n = ", n, ", σ² = ", var_ref, " y distribución Chi-cuadrado con ", gl, " gl")
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#264653"),
+    plot.subtitle = element_text(size = 11, color = "#2A9D8F", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#264653")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener la verdadera varianza poblacional ($\sigma^2 = `r var_ref`$) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 5. Diferencia de medias con varianzas conocidas"}
+**Situación.** Se comparan los puntajes de matemáticas de dos instituciones independientes. Se consideran conocidas las desviaciones estándar poblacionales: 10 puntos en A y 9 puntos en B.
+
+**Fórmula:**
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm z_{1-\alpha/2}
+\sqrt{\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-5
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(505)
+
+n1 <- 64
+n2 <- 81
+sigma1 <- 10
+sigma2 <- 9
+
+A <- rnorm(n1, 78, sigma1)
+B <- rnorm(n2, 74, sigma2)
+
+x1 <- mean(A)
+x2 <- mean(B)
+
+dif <- x1-x2
+margen <- z*sqrt(sigma1^2/n1+sigma2^2/n2)
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "\\bar{x}_1-\\bar{x}_2=%.3f-%.3f=%.3f",
+  x1, x2, dif
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm1.960\\sqrt{\\frac{%d}{%d}+\\frac{%d}{%d}}",
+  dif, sigma1^2, n1, sigma2^2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+```
+
+**Gráfica**
+
+```{r}
+color_linea    <- "#2C3E50" # Azul pizarra oscuro para la curva y ejes
+color_relleno  <- "#A3E4D7" # Verde aguamarina pastel para el área central (95%)
+color_lineas_v <- "gray75"  # Gris suave para las líneas verticales
+# =====================================================================
+
+# 1. Datos del ejercicio (Ejemplo 5: Diferencia de medias)
+dif_medias <- 2.219
+ee         <- sqrt((100 / 64) + (81 / 81)) # Error estándar = 1.600781
+li         <- -0.918
+ls         <- 5.357
+confianza  <- 0.95
+cola       <- 0.025
+
+# 2. Rango y densidad de la campana de Gauss
+x_min <- dif_medias - 3.6 * ee
+x_max <- dif_medias + 3.6 * ee
+x     <- seq(x_min, x_max, length.out = 600)
+y     <- dnorm(x, mean = dif_medias, sd = ee)
+y_max <- max(y) * 1.22
+
+# 3. Lienzo en blanco con espacio arriba para el título pequeño
+par(mar = c(3, 1.5, 2.5, 1.5))
+plot(x, y, type = "n",
+     xlim = c(x_min - 0.3, x_max + 0.4),
+     ylim = c(-y_max * 0.22, y_max),
+     axes = FALSE, xlab = "", ylab = "")
+
+# Título principal pequeño en la parte superior
+title(main = "Distribución Normal Estándar / Diferencia de Medias", 
+      cex.main = 0.9, font.main = 2, line = 0.8)
+
+# 4. Sombreado del área central (1 - alpha)
+zona <- x >= li & x <= ls
+polygon(c(li, x[zona], ls),
+        c(0, y[zona], 0),
+        col = adjustcolor(color_relleno, alpha.f = 0.75),
+        border = NA)
+
+# 5. Curva de Gauss encima del sombreado
+lines(x, y, col = color_linea, lwd = 2.5)
+
+# 6. Ejes con flechas (estilo esquema matemático limpio)
+arrows(x_min - 0.1, 0, x_max + 0.25, 0, length = 0.07, col = "gray55", lwd = 1) # Eje X
+arrows(x_min - 0.1, 0, x_min - 0.1, y_max * 0.95, length = 0.07, col = "gray55", lwd = 1) # Eje Y
+
+# 7. Líneas verticales sutiles en los límites críticos
+segments(x0 = c(li, ls), y0 = -y_max * 0.14,
+         x1 = c(li, ls), y1 = y_max * 0.92,
+         col = color_lineas_v, lwd = 0.8, lty = 2)
+
+# 8. Etiquetas de límites inferiores y superiores con formato -z y z (Li y Ls numéricos)
+text(x = li, y = -y_max * 0.08,
+     labels = paste0("Li = ", li),
+     pos = 1, font = 2, cex = 0.8)
+
+text(x = ls, y = -y_max * 0.08,
+     labels = paste0("Ls = ", ls),
+     pos = 1, font = 2, cex = 0.8)
+
+# 9. Textos interiores centrados en el área sombreada (igual que la referencia con 1 - alpha)
+x_centro <- sum(x[zona] * y[zona]) / sum(y[zona])
+y_centro <- mean(y[zona]) * 0.52
+
+text(x = x_centro, y = y_centro + y_max * 0.04,
+     labels = confianza, font = 2, cex = 1.15)
+
+text(x = x_centro, y = y_centro - y_max * 0.06,
+     labels = expression(1 - alpha), cex = 1)
+
+# 10. Valores de probabilidad en ambas colas (alfa/2)
+text(x = li - (li - x_min) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.8)
+
+text(x = ls + (x_max - ls) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.8)
+
+# 11. Etiqueta flotante de la distribución a la derecha (estilo N(0,1) de tu referencia)
+text(x = x_max * 0.82, y = y_max * 0.85,
+     labels = expression(N(0, 1)), cex = 1.3, font = 2)
+
+text(x = x_max * 0.82, y = y_max * 0.72,
+     labels = "z = 1.96",
+     font = 3, cex = 0.85)
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre las medias poblacionales de las dos instituciones. Si contiene cero, no se descarta una diferencia nula al nivel bilateral del 5 %. Si no lo contiene, existe evidencia estadística de una diferencia.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-diferencia-medias
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(101)
+
+# Parámetros exactos del ejercicio
+mu1_ref <- 76.248
+sigma1 <- 10
+n1 <- 64
+
+mu2_ref <- 74.029
+sigma2 <- 9
+n2 <- 81
+
+diff_real <- mu1_ref - mu2_ref # 2.219
+z_critico <- qnorm(0.975)      # 1.959964 (~1.960)
+error_estandar <- sqrt((sigma1^2 / n1) + (sigma2^2 / n2)) # ~1.60078
+margen_error <- z_critico * error_estandar # ~3.137
+num_simulaciones <- 100
+
+# Simulación de las 100 pares de muestras independientes
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  x1_sim = replicate(num_simulaciones, mean(rnorm(n1, mean = mu1_ref, sd = sigma1))),
+  x2_sim = replicate(num_simulaciones, mean(rnorm(n2, mean = mu2_ref, sd = sigma2)))
+) %>%
+  mutate(
+    diff_muestral = x1_sim - x2_sim,
+    lim_inf = diff_muestral - margen_error,
+    lim_sup = diff_muestral + margen_error,
+    contiene_diff = ifelse(lim_inf <= diff_real & lim_sup >= diff_real, 
+                           "Sí contiene a (μ₁ - μ₂) (95% esperado)", 
+                           "No contiene a (μ₁ - μ₂) (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= diff_real & datos_ic$lim_sup >= diff_real)
+
+# Creación del gráfico con nueva paleta de colores (Violeta Intenso vs Ámbar/Dorado)
+ggplot(datos_ic, aes(x = muestra, y = diff_muestral, color = contiene_diff)) +
+  # Línea de referencia en 0 (indica igualdad de medias)
+  geom_hline(yintercept = 0, linetype = "dotted", color = "#6C757D", linewidth = 0.8) +
+  # Línea horizontal de referencia para la diferencia poblacional real (2.219)
+  geom_hline(yintercept = diff_real, linetype = "dashed", color = "#240046", linewidth = 0.9) +
+  # Barras de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.65, alpha = 0.85) +
+  # Puntos centrales (diferencias muestrales)
+  geom_point(size = 1.6) +
+  # Paleta de colores renovada
+  scale_color_manual(
+    values = c(
+      "Sí contiene a (μ₁ - μ₂) (95% esperado)" = "#7209B7", # Morado / Violeta vibrante
+      "No contiene a (μ₁ - μ₂) (5% esperado)" = "#F4A261"  # Ámbar / Naranja dorado
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza: Diferencia de Medias (95%)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos capturan la verdadera diferencia (μ₁ - μ₂ = 2.219)"),
+    x = "Número de Muestra Simulada",
+    y = "Diferencia de Puntajes (Institución A - Institución B)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n₁ = 64, σ₁ = 10, n₂ = 81, σ₂ = 9 y Z = 1.960"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#240046"),
+    plot.subtitle = element_text(size = 11, color = "#5A189A", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#240046")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener la verdadera diferencia de medias entre los puntajes de matemáticas de las dos instituciones ($\mu_1 - \mu_2 = 2.219$ puntos) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 6. Diferencia de medias con varianzas desconocidas e iguales"}
+**Situación.** Se comparan dos metodologías de enseñanza aplicadas a grupos independientes. Se supone que las varianzas poblacionales son iguales, aunque desconocidas.
+
+**Fórmulas:**
+
+$$
+S_p^2=
+\frac{(n_1-1)S_1^2+(n_2-1)S_2^2}
+{n_1+n_2-2}
+$$
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,n_1+n_2-2}
+S_p\sqrt{\frac1{n_1}+\frac1{n_2}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-6
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(606)
+
+n1 <- 30
+n2 <- 28
+
+A <- rnorm(n1, 82, 8)
+B <- rnorm(n2, 77, 8)
+
+x1 <- mean(A)
+x2 <- mean(B)
+s1 <- sd(A)
+s2 <- sd(B)
+
+gl <- n1+n2-2
+
+sp2 <- ((n1-1)*s1^2+(n2-1)*s2^2)/gl
+sp <- sqrt(sp2)
+
+tcrit <- qt(1-alpha/2, gl)
+dif <- x1-x2
+
+margen <- tcrit*sp*sqrt(1/n1+1/n2)
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "S_p^2=\\frac{%d(%.3f)^2+%d(%.3f)^2}{%d}=%.3f",
+  n1-1, s1, n2-1, s2, gl, sp2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f(%.3f)\\sqrt{\\frac1{%d}+\\frac1{%d}}",
+  dif, tcrit, sp, n1, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+
+```
+
+**Gráfica**
+
+```{r}
+color_linea     <- "red" # Azul pizarra oscuro para la curva y ejes
+color_relleno   <- "pink" # Verde aguamarina pastel para el área central (95%)
+color_lineas_v  <- "gray75"  # Gris suave para las líneas verticales
+color_rosado    <- "black" # Rosado pastel para los valores de las colas y títulos
+# =====================================================================
+
+# 1. Datos del ejercicio (Diferencia de medias - t-Student)
+dif_medias <- 8.367
+gl         <- 56
+li         <- 3.866
+ls         <- 12.867
+confianza  <- 0.95
+cola       <- 0.025
+
+# 2. Rango y densidad de la distribución t-Student escalada a los datos
+ee         <- 4.501 / 2.003 # Error estándar
+x_min      <- dif_medias - 3.6 * ee
+x_max      <- dif_medias + 3.6 * ee
+x          <- seq(x_min, x_max, length.out = 600)
+y          <- dt((x - dif_medias) / ee, df = gl) / ee
+y_max      <- max(y) * 1.22
+
+# 3. Lienzo en blanco con espacio arriba para el título pequeño
+par(mar = c(3, 1.5, 2.5, 1.5))
+plot(x, y, type = "n",
+     xlim = c(x_min - 0.5, x_max + 0.5),
+     ylim = c(-y_max * 0.22, y_max),
+     axes = FALSE, xlab = "", ylab = "")
+
+# Título principal corregido del ejercicio en la parte superior
+title(main = "Diferencia de medias con varianzas desconocidas e iguales", 
+      cex.main = 0.85, font.main = 2, line = 0.8)
+
+# 4. Sombreado del área central (1 - alpha)
+zona <- x >= li & x <= ls
+polygon(c(li, x[zona], ls),
+        c(0, y[zona], 0),
+        col = adjustcolor(color_relleno, alpha.f = 0.75),
+        border = NA)
+
+# 5. Curva t-Student encima del sombreado
+lines(x, y, col = color_linea, lwd = 2.5)
+
+# 6. Ejes con flechas
+arrows(x_min - 0.2, 0, x_max + 0.3, 0, length = 0.07, col = "gray55", lwd = 1) # Eje X
+arrows(x_min - 0.2, 0, x_min - 0.2, y_max * 0.95, length = 0.07, col = "gray55", lwd = 1) # Eje Y
+
+# 7. Líneas verticales sutiles en los límites críticos
+segments(x0 = c(li, ls), y0 = -y_max * 0.14,
+         x1 = c(li, ls), y1 = y_max * 0.92,
+         col = color_lineas_v, lwd = 0.8, lty = 2)
+
+# 8. Etiquetas de límites inferiores y superiores (Li y Ls numéricos)
+text(x = li, y = -y_max * 0.08,
+     labels = paste0("Li = ", li),
+     pos = 1, font = 2, cex = 0.8)
+
+text(x = ls, y = -y_max * 0.08,
+     labels = paste0("Ls = ", ls),
+     pos = 1, font = 2, cex = 0.8)
+
+# 9. Textos interiores centrados en el área sombreada (1 - alpha)
+x_centro <- sum(x[zona] * y[zona]) / sum(y[zona])
+y_centro <- mean(y[zona]) * 0.52
+
+text(x = x_centro, y = y_centro + y_max * 0.04,
+     labels = confianza, font = 2, cex = 1.15)
+
+text(x = x_centro, y = y_centro - y_max * 0.06,
+     labels = expression(1 - alpha), cex = 1)
+
+# 10. Valores de probabilidad en ambas colas (en rosado pastel)
+text(x = li - (li - x_min) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.85, font = 2, col = color_rosado)
+
+text(x = ls + (x_max - ls) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.85, font = 2, col = color_rosado)
+
+# 11. Etiqueta flotante de la t-Student a la derecha (en rosado pastel)
+text(x = x_max * 0.80, y = y_max * 0.85,
+     labels = expression(t-Student), cex = 1.2, font = 2, col = color_rosado)
+
+text(x = x_max * 0.80, y = y_max * 0.72,
+     labels = paste0("df = ", gl),
+     font = 3, cex = 0.85, col = color_rosado)
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre los promedios poblacionales de ambas metodologías. Se utiliza una varianza agrupada bajo el supuesto de igualdad de varianzas poblacionales.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-diff-medias-iguales
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(303)
+
+# Parámetros exactos del ejercicio
+mu1_ref <- 82.823
+s1_ref <- 8.523
+n1 <- 30
+
+mu2_ref <- 74.457
+s2_ref <- 8.579
+n2 <- 28
+
+sp_ref <- 8.550 # Desviación estándar agrupada de referencia
+diff_real <- mu1_ref - mu2_ref # 8.366 (~8.367 en el ejercicio)
+gl <- n1 + n2 - 2 # 56 grados de libertad
+t_critico <- qt(0.975, df = gl) # 2.003241 (~2.003)
+num_simulaciones <- 100
+
+# Simulación de las 100 pares de muestras independientes
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones
+) %>%
+  rowwise() %>%
+  mutate(
+    # Generar muestras normales con la desviación estándar agrupada como parámetro común
+    m1 = list(rnorm(n1, mean = mu1_ref, sd = sp_ref)),
+    m2 = list(rnorm(n2, mean = mu2_ref, sd = sp_ref)),
+    x1_sim = mean(m1),
+    x2_sim = mean(m2),
+    s1_sim = sd(m1),
+    s2_sim = sd(m2),
+    diff_muestral = x1_sim - x2_sim,
+    # Cálculo de la varianza agrupada (Sp^2) y desviación agrupada (Sp) por muestra
+    sp2_sim = ((n1 - 1) * s1_sim^2 + (n2 - 1) * s2_sim^2) / gl,
+    sp_sim = sqrt(sp2_sim),
+    error_estandar = sp_sim * sqrt((1 / n1) + (1 / n2)),
+    margen_error = t_critico * error_estandar,
+    lim_inf = diff_muestral - margen_error,
+    lim_sup = diff_muestral + margen_error,
+    contiene_diff = ifelse(lim_inf <= diff_real & lim_sup >= diff_real, 
+                           "Sí contiene a (μ₁ - μ₂) (95% esperado)", 
+                           "No contiene a (μ₁ - μ₂) (5% esperado)")
+  ) %>%
+  ungroup()
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= diff_real & datos_ic$lim_sup >= diff_real)
+
+# Creación del gráfico con nueva paleta de colores (Azul Cobalto vs Rojo Carmesí)
+ggplot(datos_ic, aes(x = muestra, y = diff_muestral, color = contiene_diff)) +
+  # Línea de referencia en 0 (indica igualdad entre metodologías)
+  geom_hline(yintercept = 0, linetype = "dotted", color = "#6C757D", linewidth = 0.8) +
+  # Línea horizontal de referencia para la diferencia poblacional real (8.367)
+  geom_hline(yintercept = diff_real, linetype = "dashed", color = "#03045E", linewidth = 0.9) +
+  # Barras de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.65, alpha = 0.85) +
+  # Puntos centrales (diferencias muestrales)
+  geom_point(size = 1.6) +
+  # Nueva paleta de colores
+  scale_color_manual(
+    values = c(
+      "Sí contiene a (μ₁ - μ₂) (95% esperado)" = "#0077B6", # Azul cobalto / océano
+      "No contiene a (μ₁ - μ₂) (5% esperado)" = "#D62828"  # Rojo carmesí vibrante
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza: Diferencia de Medias (95%)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos capturan la verdadera diferencia (μ₁ - μ₂ = 8.367)"),
+    x = "Número de Muestra Simulada",
+    y = "Diferencia de Puntajes (Metodología A - Metodología B)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n₁ = 30, n₂ = 28, Sp = 8.550 y distribución t con 56 gl"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#03045E"),
+    plot.subtitle = element_text(size = 11, color = "#0077B6", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#03045E")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener la verdadera diferencia de medias entre los puntajes de las dos metodologías de enseñanza ($\mu_1 - \mu_2 = 8.367$ puntos) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 7. Diferencia de medias con varianzas distintas (Welch)"}
+**Situación.** Se compara el rendimiento en resolución de problemas de dos colegios independientes. Las varianzas poblacionales son desconocidas y no se supone que sean iguales.
+
+**Fórmulas:**
+
+$$
+IC_{\mu_1-\mu_2}=
+(\overline{x}_1-\overline{x}_2)
+\pm t_{1-\alpha/2,\nu}
+\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}
+$$
+
+$$
+\nu\approx
+\frac{(S_1^2/n_1+S_2^2/n_2)^2}
+{\dfrac{(S_1^2/n_1)^2}{n_1-1}
++\dfrac{(S_2^2/n_2)^2}{n_2-1}}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-7
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(707)
+
+n1 <- 25
+n2 <- 35
+
+A <- rnorm(n1, 85, 12)
+B <- rnorm(n2, 79, 7)
+
+x1 <- mean(A)
+x2 <- mean(B)
+
+s1 <- sd(A)
+s2 <- sd(B)
+
+a <- s1^2/n1
+b <- s2^2/n2
+
+nu <- (a+b)^2/(a^2/(n1-1)+b^2/(n2-1))
+
+tcrit <- qt(1-alpha/2, nu)
+
+dif <- x1-x2
+margen <- tcrit*sqrt(a+b)
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\bar{x}_1=%.3f,\\quad \\bar{x}_2=%.3f",
+  x1, x2
+))
+
+paso(sprintf(
+  "\\nu=\\frac{(%.3f+%.3f)^2}{\\frac{(%.3f)^2}{%d}+\\frac{(%.3f)^2}{%d}}=%.3f",
+  a, b, a, n1-1, b, n2-1, nu
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f\\sqrt{\\frac{(%.3f)^2}{%d}+\\frac{(%.3f)^2}{%d}}",
+  dif, tcrit, s1, n1, s2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.3f,\\ %.3f]}",
+  ic[1], ic[2]
+))
+```
+
+**Gráfica**
+
+```{r}
+color_linea     <- "#2C3E50" # Azul pizarra oscuro para la curva y ejes
+color_relleno   <- "#9B59B6" # Morado para el área central (95%)
+color_lineas_v  <- "gray75"  # Gris suave para las líneas verticales
+color_rosado    <- "#E6B0AA" # Rosado pastel para los valores de las colas y títulos
+# =====================================================================
+
+# 1. Datos del ejercicio extraídos de la imagen
+dif_medias <- 6.538
+gl         <- 33.624  # Grados de libertad (Welch)
+li         <- 1.197
+ls         <- 11.879
+confianza  <- 0.95
+cola       <- 0.025
+
+# 2. Rango y densidad de la distribución t-Student escalada a los datos
+ee         <- 5.341 / 2.033 # Error estándar aproximado
+x_min      <- dif_medias - 3.6 * ee
+x_max      <- dif_medias + 3.6 * ee
+x          <- seq(x_min, x_max, length.out = 600)
+y          <- dt((x - dif_medias) / ee, df = gl) / ee
+y_max      <- max(y) * 1.25
+
+# 3. Lienzo en blanco con espacio arriba para el título de dos líneas
+par(mar = c(3, 1.5, 3.5, 1.5))
+plot(x, y, type = "n",
+     xlim = c(x_min - 0.5, x_max + 0.5),
+     ylim = c(-y_max * 0.22, y_max),
+     axes = FALSE, xlab = "", ylab = "")
+
+# Títulos superiores (Título principal y subtítulo del problema)
+title(main = "Varianzas Desconocidas y Distintas", 
+      cex.main = 0.95, font.main = 2, line = 1.8, adj = 0)
+mtext("Diferencia de Rendimiento: Colegios Independientes", 
+      side = 3, line = 0.6, cex = 0.8, font = 3, adj = 0, col = "gray30")
+
+# 4. Sombreado del área central (1 - alpha)
+zona <- x >= li & x <= ls
+polygon(c(li, x[zona], ls),
+        c(0, y[zona], 0),
+        col = adjustcolor(color_relleno, alpha.f = 0.75),
+        border = NA)
+
+# 5. Curva t-Student encima del sombreado
+lines(x, y, col = color_linea, lwd = 2.5)
+
+# 6. Ejes con flechas
+arrows(x_min - 0.2, 0, x_max + 0.3, 0, length = 0.07, col = "gray55", lwd = 1) # Eje X
+arrows(x_min - 0.2, 0, x_min - 0.2, y_max * 0.95, length = 0.07, col = "gray55", lwd = 1) # Eje Y
+
+# 7. Líneas verticales sutiles en los límites críticos
+segments(x0 = c(li, ls), y0 = -y_max * 0.14,
+         x1 = c(li, ls), y1 = y_max * 0.92,
+         col = color_lineas_v, lwd = 0.8, lty = 2)
+
+# 8. Etiquetas de límites inferiores y superiores (Li y Ls numéricos)
+text(x = li, y = -y_max * 0.08,
+     labels = paste0("Li = ", li),
+     pos = 1, font = 2, cex = 0.8)
+
+text(x = ls, y = -y_max * 0.08,
+     labels = paste0("Ls = ", ls),
+     pos = 1, font = 2, cex = 0.8)
+
+# 9. Textos interiores centrados en el área sombreada (0.95 y 1 - alpha)
+x_centro <- sum(x[zona] * y[zona]) / sum(y[zona])
+y_centro <- mean(y[zona]) * 0.52
+
+text(x = x_centro, y = y_centro + y_max * 0.04,
+     labels = confianza, font = 2, cex = 1.15, col = "white")
+
+text(x = x_centro, y = y_centro - y_max * 0.06,
+     labels = expression(1 - alpha), cex = 1, col = "white")
+
+# 10. Valores de probabilidad en ambas colas (en rosado pastel)
+text(x = li - (li - x_min) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.85, font = 2, col = color_rosado)
+
+text(x = ls + (x_max - ls) * 0.45, y = y_max * 0.06,
+     labels = cola, cex = 0.85, font = 2, col = color_rosado)
+
+# 11. Etiqueta flotante de la t-Student a la derecha (en rosado pastel)
+text(x = x_max * 0.82, y = y_max * 0.85,
+     labels = expression(t-Student), cex = 1.2, font = 2, col = color_rosado)
+
+text(x = x_max * 0.82, y = y_max * 0.72,
+     labels = paste0("df = ", round(gl, 1)),
+     font = 3, cex = 0.82, col = color_rosado)
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia de medias poblacionales sin imponer igualdad de varianzas. La gráfica permite comparar visualmente la dispersión de los puntajes de ambos colegios.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-welch-verde-azul
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(707)
+
+# Parámetros exactos del ejercicio
+mu1_ref <- 86.212
+s1_ref <- 11.989
+n1 <- 25
+
+mu2_ref <- 79.674
+s2_ref <- 6.349
+n2 <- 35
+
+diff_real <- mu1_ref - mu2_ref # 6.538
+num_simulaciones <- 100
+
+# Simulación de las 100 muestras independientes con varianzas distintas (Welch)
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones
+) %>%
+  rowwise() %>%
+  mutate(
+    m1 = list(rnorm(n1, mean = mu1_ref, sd = s1_ref)),
+    m2 = list(rnorm(n2, mean = mu2_ref, sd = s2_ref)),
+    x1_sim = mean(m1),
+    x2_sim = mean(m2),
+    s1_sim = sd(m1),
+    s2_sim = sd(m2),
+    diff_muestral = x1_sim - x2_sim,
+    # Error estándar de Welch
+    ee_welch = sqrt((s1_sim^2 / n1) + (s2_sim^2 / n2)),
+    # Grados de libertad de Welch (Satterthwaite) por muestra simulada
+    nu_welch = ((s1_sim^2 / n1 + s2_sim^2 / n2)^2) / 
+               (((s1_sim^2 / n1)^2 / (n1 - 1)) + ((s2_sim^2 / n2)^2 / (n2 - 1))),
+    t_critico = qt(0.975, df = nu_welch),
+    margen_error = t_critico * ee_welch,
+    lim_inf = diff_muestral - margen_error,
+    lim_sup = diff_muestral + margen_error,
+    contiene_diff = ifelse(lim_inf <= diff_real & lim_sup >= diff_real, 
+                           "Sí contiene a (μ₁ - μ₂) (95% esperado)", 
+                           "No contiene a (μ₁ - μ₂) (5% esperado)")
+  ) %>%
+  ungroup()
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= diff_real & datos_ic$lim_sup >= diff_real)
+
+# Creación del gráfico con tonos verdes y azules
+ggplot(datos_ic, aes(x = muestra, y = diff_muestral, color = contiene_diff)) +
+  # Línea de referencia en 0 (indica igualdad de rendimiento)
+  geom_hline(yintercept = 0, linetype = "dotted", color = "#6C757D", linewidth = 0.8) +
+  # Línea horizontal de referencia para la diferencia real (6.538)
+  geom_hline(yintercept = diff_real, linetype = "dashed", color = "#1B4332", linewidth = 0.9) +
+  # Barras de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.65, alpha = 0.85) +
+  # Puntos centrales (diferencias muestrales)
+  geom_point(size = 1.6) +
+  # Paleta de colores: Verde Esmeralda y Azul Intenso
+  scale_color_manual(
+    values = c(
+      "Sí contiene a (μ₁ - μ₂) (95% esperado)" = "#2D6A4F", # Verde esmeralda bosque
+      "No contiene a (μ₁ - μ₂) (5% esperado)" = "#0077B6"  # Azul zafiro / brillante
+    )
+  ) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza: Welch (95%)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos capturan la verdadera diferencia (μ₁ - μ₂ = 6.538)"),
+    x = "Número de Muestra Simulada",
+    y = "Diferencia de Rendimiento (Colegio 1 - Colegio 2)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n₁ = 25, S₁ = 11.989, n₂ = 35, S₂ = 6.349 (Welch)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#1B4332"),
+    plot.subtitle = element_text(size = 11, color = "#2D6A4F", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#1B4332")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener la verdadera diferencia de rendimiento entre los dos colegios ($\mu_1 - \mu_2 = 6.538$ puntos) y 5 no.
+:::
+
+::: {.callout-note collapse="true" title="Ejemplo 8. Diferencia de proporciones"}
+**Situación.** Se comparan las proporciones de estudiantes que entregan puntualmente sus proyectos en dos colegios. Se seleccionan muestras independientes de 120 estudiantes del colegio A y 100 del colegio B.
+
+**Fórmula:**
+
+$$
+IC_{p_1-p_2}=
+(\widehat{p}_1-\widehat{p}_2)
+\pm z_{1-\alpha/2}
+\sqrt{
+\frac{\widehat{p}_1(1-\widehat{p}_1)}{n_1}
++
+\frac{\widehat{p}_2(1-\widehat{p}_2)}{n_2}
+}
+$$
+
+**Procedimiento y sustitución:**
+
+```{r}
+#| label: ejemplo-8
+#| results: asis
+#| fig-width: 9
+#| fig-height: 5
+
+set.seed(808)
+
+n1 <- 120
+n2 <- 100
+
+A <- rbinom(n1, 1, 0.70)
+B <- rbinom(n2, 1, 0.60)
+
+e1 <- sum(A)
+e2 <- sum(B)
+
+p1 <- e1/n1
+p2 <- e2/n2
+
+dif <- p1-p2
+
+se <- sqrt(p1*(1-p1)/n1+p2*(1-p2)/n2)
+margen <- z*se
+
+ic <- intervalo(dif, margen)
+
+paso(sprintf(
+  "\\widehat{p}_1=\\frac{%d}{%d}=%.3f",
+  e1, n1, p1
+))
+
+paso(sprintf(
+  "\\widehat{p}_2=\\frac{%d}{%d}=%.3f",
+  e2, n2, p2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=(%.3f-%.3f)\\pm1.960\\sqrt{\\frac{%.3f(1-%.3f)}{%d}+\\frac{%.3f(1-%.3f)}{%d}}",
+  p1, p2, p1, p1, n1, p2, p2, n2
+))
+
+paso(sprintf(
+  "IC_{95\\%%}=%.3f\\pm%.3f",
+  dif, margen
+))
+
+paso(sprintf(
+  "\\boxed{IC_{95\\%%}=[%.2f\\%%,\\ %.2f\\%%]}",
+  100*ic[1], 100*ic[2]
+))
+```
+
+**Gráfica**
+
+```{r}
+color_linea     <- "#884EA0" # Tono fucsia/morado oscuro para la curva y ejes
+color_relleno   <- "#F48FB1" # Rosado pastel/fucsia para el área central (95%)
+color_lineas_v  <- "gray60"  # Gris para las líneas verticales punteadas
+color_texto     <- "purple" # Verde oscuro para la etiqueta de confianza (estilo referencia)
+# =====================================================================
+
+# 1. Datos del ejercicio (Diferencia de proporciones)
+# p1 = 88/120 = 0.733, p2 = 62/100 = 0.620[cite: 12]
+dif_proporciones <- 0.733 - 0.620                # 0.113
+ee               <- sqrt((0.733 * (1 - 0.733) / 120) + (0.620 * (1 - 0.620) / 100)) # Error estándar
+li               <- -0.0104                        # Límite inferior (-1.04%)[cite: 12]
+ls               <- 0.2371                         # Límite superior (23.71%)[cite: 12]
+confianza_txt    <- "95% Confianza"
+cola_txt         <- "alpha/2 = 0.025"
+
+# 2. Rango y densidad de la distribución Normal
+x_min <- dif_proporciones - 3.8 * ee
+x_max <- dif_proporciones + 3.8 * ee
+x     <- seq(x_min, x_max, length.out = 600)
+y     <- dnorm(x, mean = dif_proporciones, sd = ee)
+y_max <- max(y) * 1.25
+
+# 3. Lienzo en blanco con espacio arriba para los títulos de dos líneas
+par(mar = c(3, 1.5, 4.0, 1.5))
+plot(x, y, type = "n",
+     xlim = c(x_min - 0.05, x_max + 0.05),
+     ylim = c(-y_max * 0.22, y_max),
+     axes = FALSE, xlab = "", ylab = "")
+
+# Títulos superiores idénticos al estilo de la referencia
+title(main = "Diferencia de Proporciones", 
+      cex.main = 1.1, font.main = 2, line = 2.4, adj = 0)
+mtext("Entrega puntual de proyectos: Colegio A - Colegio B", 
+      side = 3, line = 1.0, cex = 0.85, font = 3, adj = 0, col = "gray30")
+
+# 4. Sombreado del área central (intervalo de confianza)
+zona <- x >= li & x <= ls
+polygon(c(li, x[zona], ls),
+        c(0, y[zona], 0),
+        col = adjustcolor(color_relleno, alpha.f = 0.85),
+        border = NA)
+
+# 5. Curva Normal encima del sombreado
+lines(x, y, col = color_linea, lwd = 2.5)
+
+# 6. Eje horizontal inferior con flecha
+arrows(x_min - 0.03, 0, x_max + 0.04, 0, length = 0.07, col = "gray55", lwd = 1)
+
+# 7. Líneas verticales punteadas en los límites de confianza (Li y Ls)
+segments(x0 = c(li, ls), y0 = 0,
+         x1 = c(li, ls), y1 = y_max * 0.95,
+         col = color_lineas_v, lwd = 1, lty = 2)
+
+# 8. Etiquetas de los límites inferiores y superiores en el eje X
+text(x = li, y = -y_max * 0.06,
+     labels = paste0("Li = ", li),
+     pos = 1, font = 2, cex = 0.8)
+
+text(x = ls, y = -y_max * 0.06,
+     labels = paste0("Ls = ", ls),
+     pos = 1, font = 2, cex = 0.8)
+
+# 9. Texto central de confianza dentro del área sombreada
+x_centro <- sum(x[zona] * y[zona]) / sum(y[zona])
+y_centro <- mean(y[zona]) * 0.50
+
+text(x = x_centro, y = y_centro,
+     labels = confianza_txt, font = 2, cex = 1.1, col = color_texto)
+
+# 10. Valores de probabilidad en ambas colas (alpha/2 = 0.025)
+text(x = li - (li - x_min) * 0.45, y = y_max * 0.08,
+     labels = cola_txt, cex = 0.8, font = 2, col = "black")
+
+text(x = ls + (x_max - ls) * 0.45, y = y_max * 0.08,
+     labels = cola_txt, cex = 0.8, font = 2, col = "black")
+```
+
+**Interpretación.** El intervalo del 95 % estima la diferencia entre las proporciones poblacionales de estudiantes que entregan puntualmente sus proyectos. Sus extremos se expresan en puntos porcentuales.
+
+Si el intervalo contiene cero, no se descarta la igualdad de proporciones poblacionales al nivel bilateral del 5 %.
+
+**Gráfica de 100 intervalos**
+
+```{r}
+#| label: simulacion-ic-diferencia-proporciones
+#| fig-width: 11
+#| fig-height: 6.5
+#| fig-align: center
+
+library(dplyr)
+library(ggplot2)
+
+# Fijar semilla para reproducibilidad
+set.seed(808)
+
+# Parámetros exactos del ejercicio
+p1_ref <- 88 / 120 # 0.7333333
+n1 <- 120
+
+p2_ref <- 62 / 100 # 0.620
+n2 <- 100
+
+diff_real <- p1_ref - p2_ref # 0.1133333 (~11.33%)
+z_critico <- qnorm(0.975)    # 1.959964 (~1.960)
+num_simulaciones <- 100
+
+# Simulación de las 100 pares de muestras binomiales independientes
+datos_ic <- tibble(
+  muestra = 1:num_simulaciones,
+  x1_sim = rbinom(num_simulaciones, size = n1, prob = p1_ref),
+  x2_sim = rbinom(num_simulaciones, size = n2, prob = p2_ref),
+  p1_sim = x1_sim / n1,
+  p2_sim = x2_sim / n2
+) %>%
+  mutate(
+    diff_muestral = p1_sim - p2_sim,
+    error_estandar = sqrt((p1_sim * (1 - p1_sim) / n1) + (p2_sim * (1 - p2_sim) / n2)),
+    margen_error = z_critico * error_estandar,
+    lim_inf = diff_muestral - margen_error,
+    lim_sup = diff_muestral + margen_error,
+    contiene_diff = ifelse(lim_inf <= diff_real & lim_sup >= diff_real, 
+                           "Sí contiene a (p₁ - p₂) (95% esperado)", 
+                           "No contiene a (p₁ - p₂) (5% esperado)")
+  )
+
+# Conteo exacto de aciertos
+total_aciertos <- sum(datos_ic$lim_inf <= diff_real & datos_ic$lim_sup >= diff_real)
+
+# Creación del gráfico con nueva paleta de colores (Azul Petróleo vs Terracota/Coral)
+ggplot(datos_ic, aes(x = muestra, y = diff_muestral, color = contiene_diff)) +
+  # Línea de referencia en 0% (indica igualdad de proporciones entre colegios)
+  geom_hline(yintercept = 0, linetype = "dotted", color = "#6C757D", linewidth = 0.8) +
+  # Línea horizontal de referencia para la diferencia real (11.33%)
+  geom_hline(yintercept = diff_real, linetype = "dashed", color = "#003049", linewidth = 0.9) +
+  # Barras de los intervalos de confianza
+  geom_errorbar(aes(ymin = lim_inf, ymax = lim_sup), width = 0.5, linewidth = 0.65, alpha = 0.85) +
+  # Puntos centrales (diferencias de proporciones muestrales)
+  geom_point(size = 1.6) +
+  # Paleta de colores renovada
+  scale_color_manual(
+    values = c(
+      "Sí contiene a (p₁ - p₂) (95% esperado)" = "#219EBC", # Azul petróleo / cian profundo
+      "No contiene a (p₁ - p₂) (5% esperado)" = "#D64045"  # Terracota / rojo coral
+    )
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = seq(0, 100, by = 10)) +
+  labs(
+    title = "Comportamiento de 100 Intervalos de Confianza: Diferencia de Proporciones (95%)",
+    subtitle = paste0("En esta simulación, ", total_aciertos, " de 100 intervalos capturan la verdadera diferencia (p₁ - p₂ = 11.33%)"),
+    x = "Número de Muestra Simulada",
+    y = "Diferencia en Entrega Puntual (Colegio A - Colegio B)",
+    color = "Estado del Intervalo:",
+    caption = "Fuente: Simulación basada en n₁ = 120 (p̂₁ = 0.733), n₂ = 100 (p̂₂ = 0.620) y Z = 1.960"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, color = "#003049"),
+    plot.subtitle = element_text(size = 11, color = "#219EBC", margin = margin(b = 12)),
+    legend.position = "top",
+    legend.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "#EAEAEA", linewidth = 0.4),
+    axis.title = element_text(face = "bold", color = "#003049")
+  )
+```
+
+**Interpretación** Si se construyen 100 intervalos de confianza, se espera que 95 de esos intervalos van a tener la verdadera diferencia de proporciones de estudiantes que entregan puntualmente sus proyectos entre los dos colegios ($p_1 - p_2 = 0.113$ o $11.33\%$) y 5 no.
+:::
+
+## Conclusiones
+
+La estimación puntual ofrece un valor representativo de un parámetro, mientras que los intervalos de confianza comunican la incertidumbre del muestreo. La elección correcta de la fórmula depende de **qué parámetro** se estima, de **cuántas poblaciones** se comparan, de la **independencia o apareamiento**, del conocimiento de las varianzas y de los **supuestos distribucionales**. En educación, estas herramientas permiten estudiar promedios, proporciones y variabilidad de resultados sin confundir diferencias estadísticas con efectos causales.
+
+```{=html}
+<style>
+/* Botón flotante para volver al inicio */
+#volver-inicio {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #AE45FF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 25px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+}
+
+#volver-inicio:hover {
+  background-color: #8A2BE2;
+}
+</style>
+
+<button id="volver-inicio"
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        title="Volver al inicio"
+        aria-label="Volver al inicio">
+  &#8593;
+</button>
+```
